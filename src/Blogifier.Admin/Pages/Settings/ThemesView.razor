@@ -1,4 +1,4 @@
-﻿@layout SettingsLayout
+@layout SettingsLayout
 @page "/admin/settings/themes/"
 @inject HttpClient _http
 @inject IStringLocalizer<Resource> _localizer
@@ -20,7 +20,7 @@
                         <li class="themes-meta-item">@_localizer["by"] <a href="#">John Doe</a></li>
                     </ul>
                     <p class="themes-desc">This is the default theme that comes with the Blogifier 3.0 There are some customization you might enjoy.</p>
-                    <a class="btn btn-blogifier px-4" href="/admin/settings/customize/">@_localizer["customize"]</a>
+                    <a class="btn btn-blogifier px-4" href="admin/settings/customize/">@_localizer["customize"]</a>
                 </div>
             </div>
             @foreach (var item in Themes)

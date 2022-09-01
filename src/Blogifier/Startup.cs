@@ -53,6 +53,9 @@ namespace Blogifier
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+            app.UsePathBase("/robert/");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
