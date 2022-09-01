@@ -19,6 +19,8 @@ namespace Blogifier
                   .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
                   .CreateLogger();
 
+       
+
             Log.Warning("Application start");
         }
 
@@ -63,7 +65,7 @@ namespace Blogifier
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("~/Error");
             }
 
             app.UseBlazorFrameworkFiles();

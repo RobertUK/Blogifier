@@ -7,14 +7,14 @@
           "Id": "enabled",
           "Label": "Enabled",
           "Type": "checkbox",
-          "Value": "False",
+          "Value": "True",
           "Options": null
         },
         {
           "Id": "facebook",
           "Label": "Facebook",
           "Type": "text",
-          "Value": "blogifierdotnet",
+          "Value": "100054382607445",
           "Options": null
         },
         {
