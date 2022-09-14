@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.0.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.32804.182
 MinimumVisualStudioVersion = 16.0.0.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Blogifier", "src\Blogifier\Blogifier.csproj", "{30113938-1040-459A-A0B6-3663E9534C8B}"
 EndProject
@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "items", "items", "{D2E9C8BA
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
 	EndProjectSection
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{991BAB0D-3CB2-451B-9983-2165868A54CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -104,6 +106,18 @@ Global
 		{27EB38D0-E275-4033-93B6-3ED6E6B7B442}.Release|x64.Build.0 = Release|Any CPU
 		{27EB38D0-E275-4033-93B6-3ED6E6B7B442}.Release|x86.ActiveCfg = Release|Any CPU
 		{27EB38D0-E275-4033-93B6-3ED6E6B7B442}.Release|x86.Build.0 = Release|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Debug|x64.Build.0 = Debug|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Debug|x86.Build.0 = Debug|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Release|x64.ActiveCfg = Release|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Release|x64.Build.0 = Release|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Release|x86.ActiveCfg = Release|Any CPU
+		{991BAB0D-3CB2-451B-9983-2165868A54CA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

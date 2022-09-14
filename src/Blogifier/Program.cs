@@ -1,4 +1,4 @@
-﻿using Blogifier.Core.Data;
+using Blogifier.Core.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,9 +34,10 @@ namespace Blogifier
 			 Host.CreateDefaultBuilder(args)
 				  .ConfigureWebHostDefaults(webBuilder =>
 				  {
-					  webBuilder
-					  .UseContentRoot(Directory.GetCurrentDirectory())
-					  .UseIISIntegration()
+                      webBuilder
+                      ///.UseContentRoot(Directory.GetCurrentDirectory())
+                      //.UseKestrel()
+					 // .UseIISIntegration()
 					  .UseStartup<Startup>();
 				  });
 	}

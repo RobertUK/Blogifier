@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
+
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.6.0" />
@@ -12,8 +13,11 @@
     <PackageReference Include="Microsoft.Extensions.Localization" Version="6.0.1" />
     <PackageReference Include="System.Net.Http.Json" Version="6.0.0" />
     <PackageReference Include="Sotsera.Blazor.Toaster" Version="3.0.0" />
+
+    
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Blogifier.Shared\Blogifier.Shared.csproj" />
   </ItemGroup>
+  
 </Project>

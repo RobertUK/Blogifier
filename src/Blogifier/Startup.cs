@@ -1,3 +1,4 @@
+using Blogifier.Shared.Configurations;
 using Blogifier.Core.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -5,11 +6,12 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Serilog;
 
 namespace Blogifier
 {
-    public class Startup
+    public class Startup 
     {
         public Startup(IConfiguration configuration)
         {
@@ -27,6 +29,14 @@ namespace Blogifier
         public void ConfigureServices(IServiceCollection services)
         {
             Log.Warning("Start configure services");
+
+            services.AddSwaggerGen();
+
+            //services.ConfigureOptions<BlogifierConfiguration>(Configuration.GetSection("Blogifier"),);
+
+            services.Configure<BlogifierConfiguration>(Configuration.GetSection("Blogifier"));
+
+            //services.Configure<HostingConfiguration>(Configuration.GetSection("Hosting"));
 
             services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
 
@@ -48,11 +58,23 @@ namespace Blogifier
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+
+           
+
             Log.Warning("Done configure services");
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<BlogifierConfiguration> blogifierConfig)
         {
+
+ 
+
+
+            var value = blogifierConfig.Value.ConnString;
+           // var value = blogifierConfig.Value.
+
+           // app.UsePathBase(value);
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -61,6 +83,7 @@ namespace Blogifier
             else
             {
                 app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
 
             app.UseBlazorFrameworkFiles();
@@ -72,7 +95,7 @@ namespace Blogifier
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+       
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -83,6 +106,14 @@ namespace Blogifier
                 endpoints.MapFallbackToFile("admin/{*path:nonfile}", "index.html");
                 endpoints.MapFallbackToFile("account/{*path:nonfile}", "index.html");
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
+            });
+
+
         }
     }
 }

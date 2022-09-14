@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -24,8 +24,10 @@ namespace Blogifier.Pages
             _logger = logger;
         }
 
-        public void OnGet()
+        public void OnGet(string? code)
         {
+            if (null == code)
+                code = HttpContext.Response.StatusCode.ToString();
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }
