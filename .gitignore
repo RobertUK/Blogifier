@@ -350,3 +350,6 @@ MigrationBackup/
 .ionide/
 
 .DS_Store
+/src/Blogifier/Blog.db-shm
+/src/Blogifier/Data
+/src/Blogifier/Blog.db-wal
