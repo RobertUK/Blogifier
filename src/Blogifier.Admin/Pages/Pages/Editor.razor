@@ -148,7 +148,7 @@
 
            Post = await _http.GetFromJsonAsync<Post>($"api/post/byslug/{Post.Slug}");
 
-           _navigation.NavigateTo($"/admin/pages/editor/{Post.Slug}");
+           _navigation.NavigateTo($"admin/pages/editor/{Post.Slug}");
            await Load();
        }
        else

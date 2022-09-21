@@ -16,12 +16,12 @@ namespace Blogifier
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-            Log.Logger = new LoggerConfiguration()
+               Log.Logger = new LoggerConfiguration()
+                  .ReadFrom.Configuration(configuration)
                   .Enrich.FromLogContext()
-                  .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
                   .CreateLogger();
 
-            Log.Warning("Application start");
+            Log.Warning("Application start");                             
         }
 
         public IConfiguration Configuration { get; }
@@ -36,7 +36,7 @@ namespace Blogifier
 
             services.Configure<BlogifierConfiguration>(Configuration.GetSection("Blogifier"));
 
-            //services.Configure<HostingConfiguration>(Configuration.GetSection("Hosting"));
+           // services.Configure<HostingConfiguration>(Configuration.GetSection("Hosting"));
 
             services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
 
@@ -67,24 +67,27 @@ namespace Blogifier
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<BlogifierConfiguration> blogifierConfig)
         {
 
- 
+            var pathBase = blogifierConfig.Value.PathBase;
 
-
-            var value = blogifierConfig.Value.ConnString;
+            if (!string.IsNullOrEmpty(pathBase))
+            {
+                app.UsePathBase(pathBase);
+            }
+            
            // var value = blogifierConfig.Value.
 
-           // app.UsePathBase(value);
+           
 
-            if (env.IsDevelopment())
-            {
+            //if (env.IsDevelopment())
+            //{
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Error");
-                app.UseStatusCodePagesWithReExecute("/Error/{0}");
-            }
+            //}
+            //else
+            //{
+            //    app.UseExceptionHandler("~/Error");
+            //    app.UseStatusCodePagesWithReExecute("~/Error/{0}");
+            //}
 
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
@@ -107,11 +110,11 @@ namespace Blogifier
                 endpoints.MapFallbackToFile("account/{*path:nonfile}", "index.html");
             });
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
-            });
+            //app.UseSwagger();
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
+            //});
 
 
         }

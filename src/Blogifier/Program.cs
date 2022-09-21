@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 using System.IO;
 using System.Linq;
 
@@ -28,7 +29,9 @@ namespace Blogifier
 			}
 
 			host.Run();
-		}
+        }
+
+
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
 			 Host.CreateDefaultBuilder(args)

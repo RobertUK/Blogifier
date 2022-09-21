@@ -16,7 +16,7 @@
         <label class="list-check form-check" data-bs-toggle="tooltip" title="@_localizer["select-all"]">
             <input type="checkbox" @onchange="EventArgs => { CheckAll(EventArgs.Value); }" class="list-check-input form-check-input">
         </label>
-        @*<a class="btn btn-blogifier me-3 -add" href="/admin/pages/editor">@_localizer["new-category"]</a>*@
+        @*<a class="btn btn-blogifier me-3 -add" href="admin/pages/editor">@_localizer["new-category"]</a>*@
         @if (Categories != null && Categories.Count > 0)
         {
             <div class="dropdown dropdown-flush">
