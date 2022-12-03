@@ -60,6 +60,13 @@ namespace Blogifier.Controllers
             return Redirect("~/");
         }
 
+        [HttpGet]
+        public IActionResult Claims()
+        {
+            var claims = User.Claims.Select(claim => new { claim.Type, claim.Value }).ToArray();
+            return Json(claims);
+        }
+
         [HttpGet("/admin")]
         public async Task<IActionResult> Admin()
         {

@@ -14,8 +14,9 @@ namespace Blogifier
 		public static void Main(string[] args)
 		{
 			var host = CreateHostBuilder(args).Build();
+            HibernatingRhinos.Profiler.Appender.EntityFramework.EntityFrameworkProfiler.Initialize();
 
-			using (var scope = host.Services.CreateScope())
+            using (var scope = host.Services.CreateScope())
 			{
 				var services = scope.ServiceProvider;
 				var dbContext = services.GetRequiredService<AppDbContext>();

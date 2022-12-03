@@ -37,5 +37,12 @@ namespace Blogifier.Shared
 
 		public Blog Blog { get; set; }
         public List<PostCategory> PostCategories { get; set; }
+
+        public List<Comment> Comments { get; set; }// = new List<Comment>();
+
+        public string GetLink()
+        {
+            return $"/{Slug}/";
+        }
     }
 }

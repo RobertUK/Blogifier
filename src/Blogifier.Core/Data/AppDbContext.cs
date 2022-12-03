@@ -11,6 +11,7 @@ namespace Blogifier.Core.Data
         : base(options)
         {
             _options = options;
+
         }
 
         public DbSet<Blog> Blogs { get; set; }
@@ -21,6 +22,8 @@ namespace Blogifier.Core.Data
         public DbSet<Newsletter> Newsletters { get; set; }
         public DbSet<MailSetting> MailSettings { get; set; }
         public DbSet<PostCategory> PostCategories { get; set; }
+
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,6 +39,18 @@ namespace Blogifier.Core.Data
                 .HasOne(pt => pt.Category)
                 .WithMany(t => t.PostCategories)
                 .HasForeignKey(pt => pt.CategoryId);
+
+            //modelBuilder.Entity<Comment>()
+            //    .HasKey(a => new { a.PostId, a.Id });
+
+            //         modelBuilder.Entity<Comment>()
+            //.HasKey(t => new { t.CommentId });
+
+            //         modelBuilder.Entity<Comment>()
+            //             .HasOne(pt => pt.Post)
+            //             .WithMany(p => p.Comments)
+            //             .HasForeignKey(pt => pt.PostId);
+
 
             string sql = "getdate()";
 
@@ -58,6 +73,7 @@ namespace Blogifier.Core.Data
             modelBuilder.Entity<Subscriber>().Property(s => s.DateUpdated).HasDefaultValueSql(sql);
             modelBuilder.Entity<Newsletter>().Property(n => n.DateUpdated).HasDefaultValueSql(sql);
             modelBuilder.Entity<MailSetting>().Property(n => n.DateUpdated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<Comment>().Property(n => n.DateUpdated).HasDefaultValueSql(sql);
         }
     }
 }

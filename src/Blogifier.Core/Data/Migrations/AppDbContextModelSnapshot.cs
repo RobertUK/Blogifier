@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
+#nullable disable
+
 namespace Blogifier.Core.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
@@ -13,8 +15,7 @@ namespace Blogifier.Core.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "5.0.1");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.0");
 
             modelBuilder.Entity("Blogifier.Shared.Author", b =>
                 {
@@ -63,7 +64,7 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasIndex("BlogId");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.Blog", b =>
@@ -122,7 +123,7 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Blogs");
+                    b.ToTable("Blogs", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.Category", b =>
@@ -150,7 +151,52 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
+                });
+
+            modelBuilder.Entity("Blogifier.Shared.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateUpdated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("DATE('now')");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("PubDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.MailSetting", b =>
@@ -210,7 +256,7 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasIndex("BlogId");
 
-                    b.ToTable("MailSettings");
+                    b.ToTable("MailSettings", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.Newsletter", b =>
@@ -237,7 +283,7 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Newsletters");
+                    b.ToTable("Newsletters", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.Post", b =>
@@ -307,7 +353,7 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasIndex("BlogId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.PostCategory", b =>
@@ -322,7 +368,7 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("PostCategories");
+                    b.ToTable("PostCategories", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.Subscriber", b =>
@@ -363,7 +409,7 @@ namespace Blogifier.Core.Data.Migrations
 
                     b.HasIndex("BlogId");
 
-                    b.ToTable("Subscribers");
+                    b.ToTable("Subscribers", (string)null);
                 });
 
             modelBuilder.Entity("Blogifier.Shared.Author", b =>
@@ -371,6 +417,17 @@ namespace Blogifier.Core.Data.Migrations
                     b.HasOne("Blogifier.Shared.Blog", null)
                         .WithMany("Authors")
                         .HasForeignKey("BlogId");
+                });
+
+            modelBuilder.Entity("Blogifier.Shared.Comment", b =>
+                {
+                    b.HasOne("Blogifier.Shared.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("Blogifier.Shared.MailSetting", b =>
@@ -455,6 +512,8 @@ namespace Blogifier.Core.Data.Migrations
 
             modelBuilder.Entity("Blogifier.Shared.Post", b =>
                 {
+                    b.Navigation("Comments");
+
                     b.Navigation("PostCategories");
                 });
 #pragma warning restore 612, 618

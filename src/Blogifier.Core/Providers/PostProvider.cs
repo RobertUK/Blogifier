@@ -1,9 +1,12 @@
 using Blogifier.Core.Data;
+using Blogifier.Core.Data.Migrations;
 using Blogifier.Core.Extensions;
 using Blogifier.Shared;
 using Blogifier.Shared.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using ReverseMarkdown.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +32,15 @@ namespace Blogifier.Core.Providers
 		Task<IEnumerable<PostItem>> Search(Pager pager, string term, int author = 0, string include = "", bool sanitize = false);
 		Task<IEnumerable<PostItem>> GetList(Pager pager, int author = 0, string category = "", string include = "", bool sanitize = true);
 		Task<bool> Remove(int id);
-	}
+
+        Task<bool> DeleteComment(int postId, int commentId);
+
+        Task<bool> AddComment(Comment comment);
+
+       // Task<List<CommentItem>> GetPostCommentItems(int postId);
+        Task<List<Comment>> GetPostComments(int postId);
+
+    }
 
 	public class PostProvider : IPostProvider
 	{
@@ -130,8 +141,15 @@ namespace Blogifier.Core.Providers
 
 		public async Task<Post> GetPostById(int id)
 		{
-			return await _db.Posts.Where(p => p.Id == id).FirstOrDefaultAsync();
-		}
+			var posts =  await _db.Posts.Where(p => p.Id == id).FirstOrDefaultAsync();
+            var comments = await GetPostComments(id);
+
+            posts.Comments = comments;
+
+            return posts;
+
+
+        }
 
 		public async Task<IEnumerable<PostItem>> GetPostItems()
 		{
@@ -165,6 +183,7 @@ namespace Blogifier.Core.Providers
             var all = _db.Posts
                .AsNoTracking()
                .Include(p => p.PostCategories)
+               .Include(c=>c.Comments)
                .OrderByDescending(p => p.IsFeatured)
                .ThenByDescending(p => p.Published).ToList();
 
@@ -243,21 +262,62 @@ namespace Blogifier.Core.Providers
 			return await _db.SaveChangesAsync() > 0;
 		}
 
-		public async Task<bool> Update(Post post)
+        public async Task<bool> Update(Post post)
+        {
+            var existing = await _db.Posts.Where(p => p.Slug == post.Slug).FirstOrDefaultAsync();
+            if (existing == null)
+                return false;
+
+            existing.Slug = post.Slug;
+            existing.Title = post.Title;
+            existing.Description = post.Description.RemoveScriptTags().RemoveImgTags();
+            existing.Content = post.Content.RemoveScriptTags().RemoveImgTags();
+            existing.Cover = post.Cover;
+            existing.PostType = post.PostType;
+            existing.Published = post.Published;
+            existing.Comments = post.Comments;
+
+            return await _db.SaveChangesAsync() > 0;
+
+        }
+
+        public async Task<bool> AddComment(Comment comment)
+        {
+            var existing = await _db.Posts.Where(p => p.Id == comment.PostId).FirstOrDefaultAsync();
+            if (existing == null)
+                return false;
+
+       
+
+            await _db.Comments.AddAsync(comment);
+            return await _db.SaveChangesAsync() > 0;
+
+        }
+
+        public async Task<bool> DeleteComment(int postId, int commentId)
 		{
-			var existing = await _db.Posts.Where(p => p.Slug == post.Slug).FirstOrDefaultAsync();
-			if (existing == null)
-				return false;
 
-			existing.Slug = post.Slug;
-			existing.Title = post.Title;
-			existing.Description = post.Description.RemoveScriptTags().RemoveImgTags();
-			existing.Content = post.Content.RemoveScriptTags().RemoveImgTags();
-			existing.Cover = post.Cover;
-			existing.PostType = post.PostType;
-			existing.Published = post.Published;
+           
 
-			return await _db.SaveChangesAsync() > 0;
+            var existingPost = await _db.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
+			if (existingPost == null)
+                return false;
+
+            var existingComment = await _db.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
+            if (existingComment == null)
+                return false;
+
+            //var order = _db.Posts.Include(a => a.Comments).First();
+            //var Item = order.Comments.First();
+            //order.Comments.Remove(Item);
+            //_db.SaveChanges();
+
+
+            _db.Comments.Remove(existingComment);
+           // _db.Entry(existingComment).State = EntityState.Deleted;
+            //_db.Entry(existingPost).State = EntityState.Modified;
+            return await _db.SaveChangesAsync() > 0;
+
 		}
 
 		public async Task<bool> Publish(int id, bool publish)
@@ -374,8 +434,9 @@ namespace Blogifier.Core.Providers
 				Published = p.Published,
 				Featured = p.IsFeatured,
 				Author = _db.Authors.Single(a => a.Id == p.AuthorId),
-				SocialFields = new List<SocialField>()
-			};
+				SocialFields = new List<SocialField>(),
+                Comments = p.Comments // await GetPostCommentItems(p.Id)
+            };
 
 			if (post.Author != null)
 			{
@@ -387,6 +448,54 @@ namespace Blogifier.Core.Providers
 			return await Task.FromResult(post);
 		}
 
+
+
+        //public async Task<List<CommentItem>> GetPostCommentItems(int postId)
+        //{
+        //    var commentsItems = new List<CommentItem>();
+        //    // var comments = await _db.Comments.Where(a => a.PostId == postId).AsNoTracking().ToListAsync();
+
+        //    foreach (var comment in _db.Comments.Where(a => a.PostId == postId).AsNoTracking())
+        //    {
+
+        //        commentsItems.Add(new CommentItem
+        //        {
+        //            Author = comment.Author,
+        //            CommentId = comment.Id,
+        //            Content = comment.Content,
+        //            Email = comment.Email,
+        //            IsAdmin = comment.IsAdmin,
+        //            PostId = comment.PostId,
+        //            PubDate = comment.PubDate
+        //        });
+
+        //    }
+        //    return await Task.FromResult(commentsItems);
+        //}
+
+        public async Task<List<Comment>> GetPostComments(int postId)
+        {
+            var comments = new List<Comment>();
+            // var comments = await _db.Comments.Where(a => a.PostId == postId).AsNoTracking().ToListAsync();
+
+            foreach (var comment in _db.Comments.Where(a => a.PostId == postId).AsNoTracking())
+            {
+
+                comments.Add(new Comment
+                {
+                    Author = comment.Author,
+                    Id = comment.Id,
+                    Content = comment.Content,
+                    Email = comment.Email,
+                    IsAdmin = comment.IsAdmin,
+                    PostId = comment.PostId,
+                    PubDate = comment.PubDate
+                });
+
+            }
+            return await Task.FromResult(comments);
+        }
+
         List<Post> GetPosts(string include, int author)
 		{
 			var items = new List<Post>();
@@ -395,24 +504,24 @@ namespace Blogifier.Core.Providers
 			if (include.ToUpper().Contains(Constants.PostDraft) || string.IsNullOrEmpty(include))
 			{
 				var drafts = author > 0 ?
-					 _db.Posts.Include(p => p.PostCategories).Where(p => p.Published == DateTime.MinValue && p.AuthorId == author && p.PostType == PostType.Post).ToList() :
-					 _db.Posts.Include(p => p.PostCategories).Where(p => p.Published == DateTime.MinValue && p.PostType == PostType.Post).ToList();
+					 _db.Posts.Include(p => p.PostCategories).Include(c => c.Comments).Where(p => p.Published == DateTime.MinValue && p.AuthorId == author && p.PostType == PostType.Post).ToList() :
+					 _db.Posts.Include(p => p.PostCategories).Include(c => c.Comments).Where(p => p.Published == DateTime.MinValue && p.PostType == PostType.Post).ToList();
 				items = items.Concat(drafts).ToList();
 			}
 
 			if (include.ToUpper().Contains(Constants.PostFeatured) || string.IsNullOrEmpty(include))
 			{
 				var featured = author > 0 ?
-					 _db.Posts.Include(p => p.PostCategories).Where(p => p.Published > DateTime.MinValue && p.IsFeatured && p.AuthorId == author && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList() :
-					 _db.Posts.Include(p => p.PostCategories).Where(p => p.Published > DateTime.MinValue && p.IsFeatured && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList();
+					 _db.Posts.Include(p => p.PostCategories).Include(c=>c.Comments).Where(p => p.Published > DateTime.MinValue && p.IsFeatured && p.AuthorId == author && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList() :
+					 _db.Posts.Include(p => p.PostCategories).Include(c => c.Comments).Where(p => p.Published > DateTime.MinValue && p.IsFeatured && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList();
 				pubfeatured = pubfeatured.Concat(featured).ToList();
 			}
 
 			if (include.ToUpper().Contains(Constants.PostPublished) || string.IsNullOrEmpty(include))
 			{
 				var published = author > 0 ?
-					 _db.Posts.Include(p => p.PostCategories).Where(p => p.Published > DateTime.MinValue && !p.IsFeatured && p.AuthorId == author && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList() :
-					 _db.Posts.Include(p => p.PostCategories).Where(p => p.Published > DateTime.MinValue && !p.IsFeatured && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList();
+					 _db.Posts.Include(p => p.PostCategories).Include(c => c.Comments).Where(p => p.Published > DateTime.MinValue && !p.IsFeatured && p.AuthorId == author && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList() :
+					 _db.Posts.Include(p => p.PostCategories).Include(c => c.Comments).Where(p => p.Published > DateTime.MinValue && !p.IsFeatured && p.PostType == PostType.Post).OrderByDescending(p => p.Published).ToList();
 				pubfeatured = pubfeatured.Concat(published).ToList();
 			}
 

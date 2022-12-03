@@ -1,6 +1,134 @@
+//using Blogifier.Shared.Configurations;
+//using Blogifier.Core.Extensions;
+//using Microsoft.AspNetCore.Authentication.Cookies;
+//using Microsoft.AspNetCore.Builder;
+//using Microsoft.AspNetCore.Hosting;
+//using Microsoft.Extensions.Configuration;
+//using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.Extensions.Hosting;
+//using Microsoft.Extensions.Options;
+//using Serilog;
+
+//namespace Blogifier
+//{
+//    public class Startup 
+//    {
+//        public Startup(IConfiguration configuration)
+//        {
+//            Configuration = configuration;
+//               Log.Logger = new LoggerConfiguration()
+//                  .ReadFrom.Configuration(configuration)
+//                  .Enrich.FromLogContext()
+//                  .CreateLogger();
+
+//            Log.Warning("Application start");                             
+//        }
+
+//        public IConfiguration Configuration { get; }
+
+//        public void ConfigureServices(IServiceCollection services)
+//        {
+//            Log.Warning("Start configure services");
+
+//            services.AddSwaggerGen();
+
+//            //services.ConfigureOptions<BlogifierConfiguration>(Configuration.GetSection("Blogifier"),);
+
+//            services.Configure<BlogifierConfiguration>(Configuration.GetSection("Blogifier"));
+
+//           // services.Configure<HostingConfiguration>(Configuration.GetSection("Hosting"));
+
+//            services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
+
+//            services.AddAuthentication(options =>
+//            {
+//                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//            }).AddCookie();
+
+//            services.AddCors(o => o.AddPolicy("BlogifierPolicy", builder =>
+//            {
+//                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+//            }));
+
+//            services.AddBlogDatabase(Configuration);
+
+//            services.AddBlogProviders();
+
+
+//            services.AddControllersWithViews();
+//            services.AddRazorPages();
+
+
+
+
+//            Log.Warning("Done configure services");
+//        }
+
+//        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<BlogifierConfiguration> blogifierConfig)
+//        {
+
+//            var pathBase = blogifierConfig.Value.PathBase;
+
+//            if (!string.IsNullOrEmpty(pathBase))
+//            {
+//                app.UsePathBase(pathBase);
+//            }
+
+//           // var value = blogifierConfig.Value.
+
+
+
+//            //if (env.IsDevelopment())
+//            //{
+//                app.UseDeveloperExceptionPage();
+//                app.UseWebAssemblyDebugging();
+//            //}
+//            //else
+//            //{
+//            //    app.UseExceptionHandler("~/Error");
+//            //    app.UseStatusCodePagesWithReExecute("~/Error/{0}");
+//            //}
+
+//            app.UseBlazorFrameworkFiles();
+//            app.UseStaticFiles();
+//            app.UseCookiePolicy();
+
+//            app.UseRouting();
+//            app.UseCors("BlogifierPolicy");
+
+//            app.UseAuthentication();
+//            app.UseAuthorization();
+
+//            app.UseEndpoints(endpoints =>
+//            {
+//                endpoints.MapControllerRoute(
+//                      name: "default",
+//                      pattern: "{controller=Home}/{action=Index}/{id?}"
+//                 );
+//                endpoints.MapRazorPages();
+//                endpoints.MapFallbackToFile("admin/{*path:nonfile}", "index.html");
+//                endpoints.MapFallbackToFile("account/{*path:nonfile}", "index.html");
+//            });
+
+//            //app.UseSwagger();
+//            //app.UseSwaggerUI(c =>
+//            //{
+//            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
+//            //});
+
+
+//        }
+//    }
+//}
+
 using Blogifier.Shared.Configurations;
 using Blogifier.Core.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,20 +136,32 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Serilog;
+using WebEssentials.AspNetCore.OutputCaching;
+using Microsoft.Identity.Web;
+using Blogifier.Core.Security;
+using Microsoft.Identity.Web.UI;
+using WebMarkupMin.AspNetCore6;
+using WebMarkupMin.Core;
+using WilderMinds.MetaWeblog;
+
+
+using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
+
+using WmmNullLogger = WebMarkupMin.Core.Loggers.NullLogger;
 
 namespace Blogifier
 {
-    public class Startup 
+    public class Startup
     {
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
-               Log.Logger = new LoggerConfiguration()
-                  .ReadFrom.Configuration(configuration)
-                  .Enrich.FromLogContext()
-                  .CreateLogger();
+            Log.Logger = new LoggerConfiguration()
+               .ReadFrom.Configuration(configuration)
+               .Enrich.FromLogContext()
+               .CreateLogger();
 
-            Log.Warning("Application start");                             
+            Log.Warning("Application start");
         }
 
         public IConfiguration Configuration { get; }
@@ -32,18 +172,16 @@ namespace Blogifier
 
             services.AddSwaggerGen();
 
-            //services.ConfigureOptions<BlogifierConfiguration>(Configuration.GetSection("Blogifier"),);
-
             services.Configure<BlogifierConfiguration>(Configuration.GetSection("Blogifier"));
 
-           // services.Configure<HostingConfiguration>(Configuration.GetSection("Hosting"));
+
 
             services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            }).AddCookie();
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            //}).AddCookie();
 
             services.AddCors(o => o.AddPolicy("BlogifierPolicy", builder =>
             {
@@ -54,12 +192,73 @@ namespace Blogifier
 
             services.AddBlogProviders();
 
-            
+
             services.AddControllersWithViews();
             services.AddRazorPages();
 
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme);
 
-           
+
+            //services.AddProgressiveWebApp(
+            //    new WebEssentials.AspNetCore.Pwa.PwaOptions
+            //    {
+            //        OfflineRoute = "/shared/offline/"
+            //    });
+
+            services.AddOutputCaching(
+                options =>
+                {
+                    options.Profiles["default"] = new OutputCacheProfile
+                    {
+                        Duration = 1
+                    };
+                });
+
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+              .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                  .EnableTokenAcquisitionToCallDownstreamApi()
+                      .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                      .AddInMemoryTokenCaches();
+
+            services.AddAuthentication()
+                      .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"),
+                                                  JwtBearerDefaults.AuthenticationScheme)
+                      .EnableTokenAcquisitionToCallDownstreamApi();
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AdminAuthorizationPolicy.Name,
+                                  AdminAuthorizationPolicy.Build);
+            });
+
+            services.AddControllersWithViews().AddMicrosoftIdentityUI();
+
+
+            //  // HTML minification (https://github.com/Taritsyn/WebMarkupMin)
+            //  services
+            //      .AddWebMarkupMin(
+            //          options =>
+            //          {
+            //              options.AllowMinificationInDevelopmentEnvironment = true;
+            //              options.DisablePoweredByHttpHeaders = true;
+            //          })
+            //      .AddHtmlMinification(
+            //          options =>
+            //          {
+            //              options.MinificationSettings.RemoveOptionalEndTags = false;
+            //              options.MinificationSettings.WhitespaceMinificationMode = WhitespaceMinificationMode.Safe;
+            //          });
+            //  services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
+
+            services.AddWebOptimizer(pipeline =>
+            {
+                // pipeline.MinifyJsFiles();
+                pipeline.CompileScssFiles()
+                        .InlineImages(1);
+            });
+
+
 
             Log.Warning("Done configure services");
         }
@@ -73,32 +272,35 @@ namespace Blogifier
             {
                 app.UsePathBase(pathBase);
             }
-            
-           // var value = blogifierConfig.Value.
 
-           
-
-            //if (env.IsDevelopment())
-            //{
+            if (env.IsDevelopment())
+            {
                 app.UseDeveloperExceptionPage();
                 app.UseWebAssemblyDebugging();
-            //}
-            //else
-            //{
-            //    app.UseExceptionHandler("~/Error");
-            //    app.UseStatusCodePagesWithReExecute("~/Error/{0}");
-            //}
+            }
+            else
+            {
+                app.UseExceptionHandler("~/Error");
+                app.UseStatusCodePagesWithReExecute("~/Error/{0}");
+            }
+            app.UseWebOptimizer();
+            //app.UseStaticFiles();
+            //   app.UseStaticFilesWithCache();
+
+            //  app.UseOutputCaching();
+            //   app.UseWebMarkupMin();
 
             app.UseBlazorFrameworkFiles();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
+
+            app.UseStatusCodePagesWithReExecute("/Shared/Error");
 
             app.UseRouting();
             app.UseCors("BlogifierPolicy");
 
             app.UseAuthentication();
             app.UseAuthorization();
-       
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -110,11 +312,11 @@ namespace Blogifier
                 endpoints.MapFallbackToFile("account/{*path:nonfile}", "index.html");
             });
 
-            //app.UseSwagger();
-            //app.UseSwaggerUI(c =>
-            //{
-            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
-            //});
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
+            });
 
 
         }

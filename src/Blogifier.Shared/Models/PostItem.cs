@@ -27,6 +27,8 @@ namespace Blogifier.Shared
         public List<SocialField> SocialFields { get; set; }
         public bool Selected { get; set; }
 
+        public List<Comment> Comments { get; set; }
+
         #region IEquatable
         // to be able compare two posts
         // if(post1 == post2) { ... }

@@ -1,8 +1,10 @@
-﻿using Blogifier.Core.Providers;
+using Blogifier.Core.Providers;
 using Blogifier.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Blogifier.Controllers
@@ -12,11 +14,13 @@ namespace Blogifier.Controllers
 	public class PostController : ControllerBase
 	{
 		private readonly IPostProvider _postProvider;
+        private readonly ICommentProvider _commentProvider;
 
-		public PostController(IPostProvider postProvider)
+        public PostController(IPostProvider postProvider, ICommentProvider commentProvider)
 		{
 			_postProvider = postProvider;
-		}
+            _commentProvider = commentProvider;
+        }
 
 		[HttpGet("list/{filter}/{postType}")]
 		public async Task<ActionResult<List<Post>>> GetPosts(PublishedStatus filter, PostType postType)
@@ -76,5 +80,61 @@ namespace Blogifier.Controllers
 		{
 			return await _postProvider.Remove(id);
 		}
-	}
+
+
+        // public async Task<ActionResult> Post([FromForm] PersonCreationDTO personCreation)
+
+        // [Route("/post/comment/{postId}")]
+        [Route("/post/comment/{postId}")]
+        [HttpPost]
+        [HttpGet]
+        [Authorize("Admin")]
+        public async Task<ActionResult<bool>> AddComment( int postId, [FromForm] Comment commentItem)//AddComment(int postId, Comment comment)
+        {
+            var post = await _postProvider.GetPostById(postId);
+
+            if (!ModelState.IsValid)
+            {
+                RedirectToPage("Post", post);
+            }
+
+            var comment = new Comment();
+
+            comment.IsAdmin = User.Identity.IsAuthenticated;
+            comment.Content = commentItem.Content.Trim();
+            comment.Author = commentItem.Author.Trim();
+            comment.Email = commentItem.Email.Trim();
+
+      
+            await _postProvider.AddComment(comment);
+
+            return Redirect(post.GetLink() + "#" + comment.Id);
+
+        }
+
+
+
+        [Authorize("Admin")]
+        public async Task<ActionResult<bool>> DeleteComment(int postId, int commentId)
+        {
+            var post = await _postProvider.GetPostById(postId);
+
+            if (post == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            var comment = post.Comments.FirstOrDefault(c => c.Id == commentId);
+
+            if (comment == null)
+            {
+                return StatusCode((int)HttpStatusCode.NotFound);
+            }
+
+            
+            await _postProvider.DeleteComment(postId, commentId);
+            return Redirect(post.GetLink());
+
+        }
+    }
 }
