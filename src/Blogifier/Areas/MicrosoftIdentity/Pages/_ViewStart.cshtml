@@ -1,0 +1,22 @@
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.AspNetCore.Mvc.ViewEngines
+@using Blogifier.Core.Providers
+@using Blogifier.Shared
+@inject IWebHostEnvironment Environment
+@inject ICompositeViewEngine Engine
+@inject IBlogProvider _blogProvider
+
+@{
+
+
+   // var result = Engine.GetView(ViewContext, "_Layout", isMainPage: false);
+    //var viewResult = Engine.GetView(null, "_Layout", false);
+    //if (viewResult.Success)
+    PostModel model = new PostModel();
+    model.Blog = await _blogProvider.GetBlogItem();
+    string viewPath = $"~/Views/Themes/{model.Blog.Theme}/layouts/_MinLayout.cshtml";
+
+    {
+        Layout = @viewPath;
+    }
+}

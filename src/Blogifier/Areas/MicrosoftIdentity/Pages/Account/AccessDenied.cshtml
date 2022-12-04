@@ -1,0 +1,22 @@
+@page
+@using Blogifier.Shared.Resources
+@using Blogifier.Core.Providers
+@using Blogifier.Shared
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> _localizer
+@inject IBlogProvider _blogProvider
+@model Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Pages.Account.AccessDeniedModel
+@{
+    var viewModel = new LayoutPageModel();
+
+    viewModel.Title = "Access Denied";
+
+    viewModel.Description = "Access Denied";
+
+    ViewData["Model"] = viewModel;
+}
+
+<header>
+    <h1 class="text-danger">@ViewData["Title"]</h1>
+    <p class="text-danger">You do not have access to this resource.</p>
+</header>

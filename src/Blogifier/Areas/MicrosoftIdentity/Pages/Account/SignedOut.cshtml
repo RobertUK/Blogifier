@@ -1,0 +1,25 @@
+@page
+@using Blogifier.Shared.Resources
+@using Blogifier.Core.Providers
+@using Blogifier.Shared
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> _localizer
+@inject IBlogProvider _blogProvider
+@model Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Pages.Account.SignedOutModel
+@{
+    var viewModel = new LayoutPageModel();
+
+    viewModel.Title = "Signed out";
+
+    viewModel.Description = "Signed out";
+
+    ViewData["Model"] = viewModel;
+}
+
+
+
+
+<h2>@ViewData["Title"]</h2>
+<p>
+    You have successfully signed out!
+</p>
