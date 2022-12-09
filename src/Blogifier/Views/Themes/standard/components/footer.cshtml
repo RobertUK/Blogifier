@@ -18,12 +18,12 @@
 </div>
 
 <footer class="container">
-    <partial name="../layouts/_LoginPartial.cshtml" />
+    @*<partial name="../layouts/_LoginPartial.cshtml" />*@
     <partial name="../components/newsletter.cshtml" />
     <section class="footer d-md-flex text-center text-md-start py-4 py-md-5">
         <p>&copy; @DateTime.Now.Year - @siteTitle</p>
         <p class="ms-md-auto mt-2 mt-md-0">
-            @_localizer["powered-by"] <a href="https://blogifier.net" rel="nofollow" target="_blank" title="@_localizer["blogifier"] - @version">@_localizer["blogifier"]</a>
+      
         </p>
     </section>
 </footer>

@@ -1,126 +1,3 @@
-//using Blogifier.Shared.Configurations;
-//using Blogifier.Core.Extensions;
-//using Microsoft.AspNetCore.Authentication.Cookies;
-//using Microsoft.AspNetCore.Builder;
-//using Microsoft.AspNetCore.Hosting;
-//using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.DependencyInjection;
-//using Microsoft.Extensions.Hosting;
-//using Microsoft.Extensions.Options;
-//using Serilog;
-
-//namespace Blogifier
-//{
-//    public class Startup 
-//    {
-//        public Startup(IConfiguration configuration)
-//        {
-//            Configuration = configuration;
-//               Log.Logger = new LoggerConfiguration()
-//                  .ReadFrom.Configuration(configuration)
-//                  .Enrich.FromLogContext()
-//                  .CreateLogger();
-
-//            Log.Warning("Application start");                             
-//        }
-
-//        public IConfiguration Configuration { get; }
-
-//        public void ConfigureServices(IServiceCollection services)
-//        {
-//            Log.Warning("Start configure services");
-
-//            services.AddSwaggerGen();
-
-//            //services.ConfigureOptions<BlogifierConfiguration>(Configuration.GetSection("Blogifier"),);
-
-//            services.Configure<BlogifierConfiguration>(Configuration.GetSection("Blogifier"));
-
-//           // services.Configure<HostingConfiguration>(Configuration.GetSection("Hosting"));
-
-//            services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
-
-//            services.AddAuthentication(options =>
-//            {
-//                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//            }).AddCookie();
-
-//            services.AddCors(o => o.AddPolicy("BlogifierPolicy", builder =>
-//            {
-//                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-//            }));
-
-//            services.AddBlogDatabase(Configuration);
-
-//            services.AddBlogProviders();
-
-
-//            services.AddControllersWithViews();
-//            services.AddRazorPages();
-
-
-
-
-//            Log.Warning("Done configure services");
-//        }
-
-//        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<BlogifierConfiguration> blogifierConfig)
-//        {
-
-//            var pathBase = blogifierConfig.Value.PathBase;
-
-//            if (!string.IsNullOrEmpty(pathBase))
-//            {
-//                app.UsePathBase(pathBase);
-//            }
-
-//           // var value = blogifierConfig.Value.
-
-
-
-//            //if (env.IsDevelopment())
-//            //{
-//                app.UseDeveloperExceptionPage();
-//                app.UseWebAssemblyDebugging();
-//            //}
-//            //else
-//            //{
-//            //    app.UseExceptionHandler("~/Error");
-//            //    app.UseStatusCodePagesWithReExecute("~/Error/{0}");
-//            //}
-
-//            app.UseBlazorFrameworkFiles();
-//            app.UseStaticFiles();
-//            app.UseCookiePolicy();
-
-//            app.UseRouting();
-//            app.UseCors("BlogifierPolicy");
-
-//            app.UseAuthentication();
-//            app.UseAuthorization();
-
-//            app.UseEndpoints(endpoints =>
-//            {
-//                endpoints.MapControllerRoute(
-//                      name: "default",
-//                      pattern: "{controller=Home}/{action=Index}/{id?}"
-//                 );
-//                endpoints.MapRazorPages();
-//                endpoints.MapFallbackToFile("admin/{*path:nonfile}", "index.html");
-//                endpoints.MapFallbackToFile("account/{*path:nonfile}", "index.html");
-//            });
-
-//            //app.UseSwagger();
-//            //app.UseSwaggerUI(c =>
-//            //{
-//            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
-//            //});
-
-
-//        }
-//    }
-//}
-
 using Blogifier.Shared.Configurations;
 using Blogifier.Core.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -148,6 +25,10 @@ using WilderMinds.MetaWeblog;
 using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
 
 using WmmNullLogger = WebMarkupMin.Core.Loggers.NullLogger;
+using System;
+using Microsoft.Net.Http.Headers;
+using Blogifier.Admin;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace Blogifier
 {
@@ -174,7 +55,14 @@ namespace Blogifier
 
             services.Configure<BlogifierConfiguration>(Configuration.GetSection("Blogifier"));
 
-
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                // Only loopback proxies are allowed by default. Clear that restriction because forwarders are
+                // being enabled by explicit configuration.
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });            
 
             services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
 
@@ -235,28 +123,28 @@ namespace Blogifier
             services.AddControllersWithViews().AddMicrosoftIdentityUI();
 
 
-            //  // HTML minification (https://github.com/Taritsyn/WebMarkupMin)
-            //  services
-            //      .AddWebMarkupMin(
-            //          options =>
-            //          {
-            //              options.AllowMinificationInDevelopmentEnvironment = true;
-            //              options.DisablePoweredByHttpHeaders = true;
-            //          })
-            //      .AddHtmlMinification(
-            //          options =>
-            //          {
-            //              options.MinificationSettings.RemoveOptionalEndTags = false;
-            //              options.MinificationSettings.WhitespaceMinificationMode = WhitespaceMinificationMode.Safe;
-            //          });
-            //  services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
+            // HTML minification (https://github.com/Taritsyn/WebMarkupMin)
+            services
+                .AddWebMarkupMin(
+                    options =>
+                    {
+                        options.AllowMinificationInDevelopmentEnvironment = true;
+                        options.DisablePoweredByHttpHeaders = true;
+                    })
+                .AddHtmlMinification(
+                    options =>
+                    {
+                        options.MinificationSettings.RemoveOptionalEndTags = false;
+                        options.MinificationSettings.WhitespaceMinificationMode = WhitespaceMinificationMode.Safe;
+                    });
+            services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
 
-            services.AddWebOptimizer(pipeline =>
-            {
-                // pipeline.MinifyJsFiles();
-                pipeline.CompileScssFiles()
-                        .InlineImages(1);
-            });
+            //services.AddWebOptimizer(pipeline =>
+            //{
+            //    pipeline.MinifyJsFiles();
+            //    pipeline.CompileScssFiles()
+            //            .InlineImages(1);
+            //});
 
 
 
@@ -267,7 +155,7 @@ namespace Blogifier
         {
 
             var pathBase = blogifierConfig.Value.PathBase;
-
+           // app.UseForwardedHeaders();
             if (!string.IsNullOrEmpty(pathBase))
             {
                 app.UsePathBase(pathBase);
@@ -283,20 +171,30 @@ namespace Blogifier
                 app.UseExceptionHandler("~/Error");
                 app.UseStatusCodePagesWithReExecute("~/Error/{0}");
             }
-            app.UseWebOptimizer();
-            //app.UseStaticFiles();
-            //   app.UseStaticFilesWithCache();
+           // app.UseWebOptimizer();
 
-            //  app.UseOutputCaching();
-            //   app.UseWebMarkupMin();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                OnPrepareResponse = (context) =>
+                {
+                    var time = TimeSpan.FromDays(365);
+                    context.Context.Response.Headers[HeaderNames.CacheControl] = $"max-age={time.TotalSeconds.ToString()}";
+                    context.Context.Response.Headers[HeaderNames.Expires] = DateTime.UtcNow.Add(time).ToString("R");
+                }
+            });
+
+           // app.UseOutputCaching();
+          // app.UseWebMarkupMin();
 
             app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
+
 
             app.UseStatusCodePagesWithReExecute("/Shared/Error");
 
             app.UseRouting();
             app.UseCors("BlogifierPolicy");
+
+           // app.UseMetaWeblog("/metaweblog");
 
             app.UseAuthentication();
             app.UseAuthorization();

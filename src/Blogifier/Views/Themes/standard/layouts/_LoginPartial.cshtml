@@ -1,19 +1,23 @@
 @using Microsoft.Identity.Web
+@using Blogifier.Shared.Resources
+@using Blogifier.Shared
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<Resource> _localizer
 @if (User.Identity.IsAuthenticated)
 {
     <ul class="nav navbar-nav navbar-right">
         <li class="navbar-text">Hello @User.Identity.Name!</li>
         <li class="navbar-btn">
             <form method="get" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="EditProfile">
-                <button type="submit" class="btn btn-primary" style="margin-right:5px">Edit Profile</button>
+                <button type="submit" class="btn btn-primary" style="margin-right:5px">@_localizer["edit-profile"]</button>
             </form>
         </li>
-        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Sign out</a></li>
+        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">@_localizer["logout"]</a></li>
     </ul>
 }
 else
 {
     <ul class="nav navbar-nav navbar-right">
-        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Sign in</a></li>
+        <li><a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">@_localizer["login"]</a></li>
     </ul>
 }

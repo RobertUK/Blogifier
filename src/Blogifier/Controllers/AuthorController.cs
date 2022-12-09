@@ -1,4 +1,4 @@
-﻿using Blogifier.Core.Providers;
+using Blogifier.Core.Providers;
 using Blogifier.Shared;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -38,8 +38,10 @@ namespace Blogifier.Controllers
 		[HttpGet("getcurrent")]
 		public async Task<ActionResult<Author>> GetCurrentAuthor()
 		{
-			if (User.Identity.IsAuthenticated)
-				return await FindByEmail(User.FindFirstValue(ClaimTypes.Name));
+            var x = User.FindFirstValue(ClaimTypes.Email);
+
+            if (User.Identity.IsAuthenticated)
+				return await FindByEmail(User.FindFirstValue(ClaimTypes.Email));
 			return new Author();
 		}
 

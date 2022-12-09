@@ -37,7 +37,7 @@ namespace Microsoft.Identity.Web.UI.Areas.MicrosoftIdentity.Controllers
         /// Handles user sign in.
         /// </summary>
         /// <param name="scheme">Authentication scheme.</param>
-        /// <param name="redirectUri">Redirect URI.</param>
+        /// <param name="redirectUri">Redirect URI.</param>ync
         /// <returns>Challenge generating a redirect to Azure AD to sign in the user.</returns>
         [HttpGet("{scheme?}")]
         public IActionResult SignIn(

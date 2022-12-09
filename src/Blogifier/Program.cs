@@ -6,6 +6,9 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Blogifier
 {

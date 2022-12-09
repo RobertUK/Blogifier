@@ -11,6 +11,7 @@ namespace Blogifier.Core.Data
         : base(options)
         {
             _options = options;
+            
 
         }
 

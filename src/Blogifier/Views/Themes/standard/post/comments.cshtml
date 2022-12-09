@@ -50,8 +50,8 @@
                         @{
                             if (User.IsInRole("Admin"))
                         {
-                            <a class="delete noline" asp-controller="Post" asp-Action="DeleteComment" asp-route-postid="@postModel.Post.Id" asp-route-commentid="@comment.Id" asp-route-afrt="@ViewData["afrt"]" title="Delete the comment...">Delete...</a>
-                           }
+                                <a class="delete noline" asp-controller="Post" asp-Action="DeleteComment" asp-route-commentid="@comment.Id" asp-route-postid="@postModel.Post.Id" title="Delete the comment...">Delete...</a>
+                            }
                         }
                     </div>
                 </article>
@@ -94,23 +94,22 @@
                         readonlyNameAttribute = "readonly";
                     }
 
-                    <label for="author">Name</label>
+                    <label for="author">Your Name</label>
                     <input id="author" name="author" placeholder="Your name" required @readonlyNameAttribute value="@name" />
                     @if (readonlyNameAttribute != null)
-                    {
+                    { 
                         <p>
                             To change this,
                             <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="EditProfile" title="Update Profile">Update Profile</a>.
                         </p>
                     }
 
-                    <label for="email">E-mail</label>
-                    <input id="email" name="email" placeholder="Example: mini@me.cinema" @readonlyEmailAttribute required value="@emailAddress" />
+                   @* <label for="email">E-mail</label>*@
+                    <input hidden id="email" name="email" placeholder="Example: mini@me.cinema" @readonlyEmailAttribute required value="@emailAddress" />
                     @if (readonlyEmailAttribute != null)
                     {
                         <p>
-                            To change this,
-                            <a asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="EditProfile" title="Update Profile">Update Profile</a>.
+                            You are signed in through @User.Claims.FirstOrDefault(t => t.Type== "idpFriendlyName").Value. Your email address <b>@emailAddress</b> will be visible to others.
                         </p>
                     }
                     <br />

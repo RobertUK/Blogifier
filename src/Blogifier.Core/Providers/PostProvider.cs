@@ -33,7 +33,7 @@ namespace Blogifier.Core.Providers
 		Task<IEnumerable<PostItem>> GetList(Pager pager, int author = 0, string category = "", string include = "", bool sanitize = true);
 		Task<bool> Remove(int id);
 
-        Task<bool> DeleteComment(int postId, int commentId);
+        Task<bool> DeleteComment(int commentId);
 
         Task<bool> AddComment(Comment comment);
 
@@ -141,10 +141,10 @@ namespace Blogifier.Core.Providers
 
 		public async Task<Post> GetPostById(int id)
 		{
-			var posts =  await _db.Posts.Where(p => p.Id == id).FirstOrDefaultAsync();
-            var comments = await GetPostComments(id);
+			var posts =  await _db.Posts.Where(p => p.Id == id).Include(c=>c.Comments).FirstOrDefaultAsync();
+           // var comments = await GetPostComments(id);
 
-            posts.Comments = comments;
+           // posts.Comments = comments;
 
             return posts;
 
@@ -276,6 +276,7 @@ namespace Blogifier.Core.Providers
             existing.PostType = post.PostType;
             existing.Published = post.Published;
             existing.Comments = post.Comments;
+           
 
             return await _db.SaveChangesAsync() > 0;
 
@@ -294,31 +295,20 @@ namespace Blogifier.Core.Providers
 
         }
 
-        public async Task<bool> DeleteComment(int postId, int commentId)
+        public async Task<bool> DeleteComment(int commentId)
 		{
-
-           
-
-            var existingPost = await _db.Posts.Where(p => p.Id == postId).FirstOrDefaultAsync();
-			if (existingPost == null)
-                return false;
 
             var existingComment = await _db.Comments.Where(c => c.Id == commentId).FirstOrDefaultAsync();
             if (existingComment == null)
                 return false;
 
-            //var order = _db.Posts.Include(a => a.Comments).First();
-            //var Item = order.Comments.First();
-            //order.Comments.Remove(Item);
-            //_db.SaveChanges();
-
-
             _db.Comments.Remove(existingComment);
-           // _db.Entry(existingComment).State = EntityState.Deleted;
+            // _db.Entry(existingComment).State = EntityState.Deleted;
             //_db.Entry(existingPost).State = EntityState.Modified;
             return await _db.SaveChangesAsync() > 0;
 
-		}
+
+        }
 
 		public async Task<bool> Publish(int id, bool publish)
 		{
@@ -448,37 +438,12 @@ namespace Blogifier.Core.Providers
 			return await Task.FromResult(post);
 		}
 
-
-
-        //public async Task<List<CommentItem>> GetPostCommentItems(int postId)
-        //{
-        //    var commentsItems = new List<CommentItem>();
-        //    // var comments = await _db.Comments.Where(a => a.PostId == postId).AsNoTracking().ToListAsync();
-
-        //    foreach (var comment in _db.Comments.Where(a => a.PostId == postId).AsNoTracking())
-        //    {
-
-        //        commentsItems.Add(new CommentItem
-        //        {
-        //            Author = comment.Author,
-        //            CommentId = comment.Id,
-        //            Content = comment.Content,
-        //            Email = comment.Email,
-        //            IsAdmin = comment.IsAdmin,
-        //            PostId = comment.PostId,
-        //            PubDate = comment.PubDate
-        //        });
-
-        //    }
-        //    return await Task.FromResult(commentsItems);
-        //}
-
         public async Task<List<Comment>> GetPostComments(int postId)
         {
-            var comments = new List<Comment>();
-            // var comments = await _db.Comments.Where(a => a.PostId == postId).AsNoTracking().ToListAsync();
+           // var comments = new List<Comment>();
+             var comments =  _db.Comments.Where(a => a.PostId == postId).AsNoTracking().ToList();
 
-            foreach (var comment in _db.Comments.Where(a => a.PostId == postId).AsNoTracking())
+            foreach (var comment in comments)
             {
 
                 comments.Add(new Comment
