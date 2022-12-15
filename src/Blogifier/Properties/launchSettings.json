@@ -28,11 +28,26 @@
         "ASPNETCORE_URLS": "http://localhost:5000"
       },
       "distributionName": ""
+    },
+    "IIS2": {
+      "commandName": "IIS",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:5000",
+      "dotnetRunMessages": "true",
+      "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
+      "nativeDebugging": true
     }
   },
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost:5000",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:3169",
       "sslPort": 0

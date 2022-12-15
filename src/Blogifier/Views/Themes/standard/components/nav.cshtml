@@ -5,11 +5,11 @@
 @inject IStringLocalizer<Resource> _localizer
 @inject ICategoryProvider _categoryProvider
 @inject IAuthorProvider _authorProvider
-
+@using System.Security.Claims;
 @{
     var categories = await _categoryProvider.Categories();
     var catUrl = Url.Content("~/categories");
-    var currentUserAuthor = await _authorProvider.FindByEmail(User.Identity.Name);
+    var currentUserAuthor = await _authorProvider.FindByEmail(User.FindFirstValue(ClaimTypes.Email));
 }
 
 <nav class="header-nav d-flex">

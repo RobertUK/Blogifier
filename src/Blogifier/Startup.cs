@@ -29,6 +29,8 @@ using System;
 using Microsoft.Net.Http.Headers;
 using Blogifier.Admin;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Http;
 
 namespace Blogifier
 {
@@ -139,12 +141,12 @@ namespace Blogifier
                     });
             services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
 
-            //services.AddWebOptimizer(pipeline =>
-            //{
-            //    pipeline.MinifyJsFiles();
-            //    pipeline.CompileScssFiles()
-            //            .InlineImages(1);
-            //});
+            services.AddWebOptimizer(pipeline =>
+            {
+                pipeline.MinifyJsFiles();
+                pipeline.CompileScssFiles()
+                        .InlineImages(1);
+            });
 
 
 
@@ -155,7 +157,7 @@ namespace Blogifier
         {
 
             var pathBase = blogifierConfig.Value.PathBase;
-           // app.UseForwardedHeaders();
+            app.UseForwardedHeaders();
             if (!string.IsNullOrEmpty(pathBase))
             {
                 app.UsePathBase(pathBase);
@@ -168,10 +170,18 @@ namespace Blogifier
             }
             else
             {
-                app.UseExceptionHandler("~/Error");
-                app.UseStatusCodePagesWithReExecute("~/Error/{0}");
+                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
-           // app.UseWebOptimizer();
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                HttpOnly = HttpOnlyPolicy.Always,
+                MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None,
+                Secure = CookieSecurePolicy.Always
+            });
+    
+
+            app.UseWebOptimizer();
 
             app.UseStaticFiles(new StaticFileOptions()
             {
