@@ -4,7 +4,6 @@
   padding-left: 20rem;
   margin-bottom: 2rem;
   position: relative;
-
   // cover
   &-cover {
     position: absolute;
@@ -29,19 +28,18 @@
       border-radius: $radius-var;
     }
   }
+
   &-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
   }
-
   // details
   &-details {
     padding: 1.5rem 0 1.5rem 2rem;
     flex-grow: 1;
   }
-
   // meta
   &-meta {
     font-size: 0.75rem;
@@ -49,37 +47,48 @@
     margin-top: 1rem;
     margin-bottom: 1rem;
     opacity: 0.7;
+
     a {
       color: #555;
       text-decoration: none;
     }
+
     &-item {
       display: flex;
       align-items: center;
       margin-right: 0.875rem;
     }
   }
+
   &-author {
     &-img {
       border-radius: 5rem;
       margin-right: 0.25rem;
       filter: grayscale(100%);
     }
+
     &-name {
       text-transform: capitalize;
     }
   }
+
   &-date {
     &-icon {
       margin-right: 0.375rem;
     }
   }
+
+  &-comments {
+    &-icon {
+      margin-right: 0.375rem;
+    }
+  }
+
   &-cat {
     &-icon {
       margin-right: 0rem;
     }
   }
-
   // title
   &-title {
     font-size: 1.5rem;
@@ -91,6 +100,7 @@
     color: #000;
     transition: color ease-in-out 0.2s;
     text-decoration: none;
+
     &:hover {
       color: $color;
     }
@@ -105,7 +115,6 @@
       position: absolute;
     }
   }
-
   // desc
   &-desc {
     margin-bottom: 0.5rem;
@@ -119,7 +128,6 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-
   // more link
   &-more {
     display: inline-block;
@@ -127,11 +135,11 @@
     font-size: 0.875rem;
     color: #555;
     text-decoration: none;
+
     &:hover {
       color: $color;
     }
   }
-
   // hover item
   &:hover {
     .post-list-desc {
