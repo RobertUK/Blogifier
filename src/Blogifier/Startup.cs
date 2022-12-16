@@ -143,7 +143,7 @@ namespace Blogifier
 
             services.AddWebOptimizer(pipeline =>
             {
-                pipeline.MinifyJsFiles();
+               // pipeline.MinifyJsFiles();
                 pipeline.CompileScssFiles()
                         .InlineImages(1);
             });
@@ -193,8 +193,8 @@ namespace Blogifier
                 }
             });
 
-           // app.UseOutputCaching();
-          // app.UseWebMarkupMin();
+            app.UseOutputCaching();
+           app.UseWebMarkupMin();
 
             app.UseBlazorFrameworkFiles();
 

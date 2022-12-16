@@ -32,9 +32,6 @@
                         </svg>
                         <time class="post-list-date-time">@post.Published.ToFriendlyShortDateString()</time>
                     </div>
-                    <a class="post-list-meta-item post-list-comments" href="~/posts/@post.Slug#comments" itemprop="discussionUrl" title="Go to the comments section">
-                        <span itemprop="commentCount">@post.Comments.Count comments</span>
-                    </a>
                     @if(post.Categories != null)
                     {
                     <div class="post-list-meta-item post-list-cat">
@@ -55,7 +52,6 @@
                         <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
                     </svg>
                 </a>
-              
             </section>
         </article>
     }

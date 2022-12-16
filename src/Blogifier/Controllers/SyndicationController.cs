@@ -1,4 +1,4 @@
-using Blogifier.Core.Data;
+﻿using Blogifier.Core.Data;
 using Blogifier.Core.Providers;
 using Blogifier.Shared;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Claims;
 
 namespace Blogifier.Controllers
 {
@@ -30,7 +29,7 @@ namespace Blogifier.Controllers
 		public async Task<List<Post>> GetItems(string feedUrl, string baseUrl)
 		{
 			Author author = await _dbContext.Authors
-				.Where(a => a.Email == User.FindFirstValue(ClaimTypes.Email))
+				.Where(a => a.Email == User.Identity.Name)
 				.FirstOrDefaultAsync();
 
 			string webRoot = Url.Content("~/");

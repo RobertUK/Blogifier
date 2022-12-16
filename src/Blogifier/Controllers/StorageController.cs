@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Blogifier.Controllers
@@ -45,7 +44,7 @@ namespace Blogifier.Controllers
 		[HttpPost("upload/{uploadType}")]
 		public async Task<ActionResult> Upload(IFormFile file, UploadType uploadType, int postId = 0)
 		{
-			var author = await _authorProvider.FindByEmail(User.FindFirstValue(ClaimTypes.Email));
+			var author = await _authorProvider.FindByEmail(User.Identity.Name);
 			var post = postId == 0 ? new Post() : await _postProvider.GetPostById(postId);
 
             var path = $"{author.Id}/{DateTime.Now.Year}/{DateTime.Now.Month}";
