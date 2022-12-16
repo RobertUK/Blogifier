@@ -1,5 +1,10 @@
-﻿using Blogifier.Core.Providers;
+using Blogifier.Core.Providers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyModel.Resolution;
+using Serilog;
+using Serilog;
+using Serilog.Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -33,7 +38,17 @@ namespace Blogifier.Tests
 
       IStorageProvider GetSut()
       {
-         var inMemorySettings = new Dictionary<string, string> {
+
+            Log.Logger = new LoggerConfiguration()
+           //.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+           .Enrich.FromLogContext()
+           .MinimumLevel.Debug()
+           //.ReadFrom.Configuration(builder.Configuration)
+        
+           .WriteTo.File("Logs/blog.txt", rollingInterval: RollingInterval.Day)
+           .CreateLogger();
+
+            var inMemorySettings = new Dictionary<string, string> {
             {"Blgofier:FileExtensions", "png,gif,jpeg,jpg,zip"}
          };
 
@@ -41,7 +56,17 @@ namespace Blogifier.Tests
             .AddInMemoryCollection(inMemorySettings)
             .Build();
 
-         return new StorageProvider(configuration);
+            var serviceProvider = new ServiceCollection()
+    .AddLogging()
+    .BuildServiceProvider();
+
+            var factory = serviceProvider.GetService<Logger>();
+
+            //var logger = factory.CreateLogger<StorageProvider>();
+
+
+
+         return new StorageProvider(configuration, Log.Logger);
       }
    }
 }

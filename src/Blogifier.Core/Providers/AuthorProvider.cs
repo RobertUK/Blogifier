@@ -3,6 +3,7 @@ using Blogifier.Core.Extensions;
 using Blogifier.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +27,15 @@ namespace Blogifier.Core.Providers
 	{
 		private readonly AppDbContext _db;
 		private static string _salt;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
 
-		public AuthorProvider(AppDbContext db, IConfiguration configuration)
+        public AuthorProvider(AppDbContext db, IConfiguration configuration, ILogger logger)
 		{
 			_db = db;
 			_salt = configuration.GetSection("Blogifier").GetValue<string>("Salt");
-		}
+            _logger = logger;
+        }
 
 		public async Task<List<Author>> GetAuthors()
 		{
@@ -45,25 +49,25 @@ namespace Blogifier.Core.Providers
 
 		public async Task<bool> Verify(LoginModel model)
 		{
-			Serilog.Log.Warning($"Verifying password for {model.Email}");
+			_logger.Warning($"Verifying password for {model.Email}");
 
 			Author existing = await Task.FromResult(_db.Authors.Where(a =>
 				a.Email == model.Email).FirstOrDefault());
 
 			if (existing == null)
 			{
-				Serilog.Log.Warning($"User with email {model.Email} not found");
+				_logger.Warning($"User with email {model.Email} not found");
 				return false;
 			}
 
 			if(existing.Password == model.Password.Hash(_salt))
 			{
-				Serilog.Log.Warning($"Successful login for {model.Email}");
+				_logger.Warning($"Successful login for {model.Email}");
 				return true;
 			}
 			else
 			{
-				Serilog.Log.Warning($"Password does not match");
+				_logger.Warning($"Password does not match");
 				return false;
 			}
 		}
@@ -95,7 +99,7 @@ namespace Blogifier.Core.Providers
 				}
 				catch (Exception ex)
 				{
-					Serilog.Log.Warning($"Error registering new blog: {ex.Message}");
+					_logger.Warning($"Error registering new blog: {ex.Message}");
 					return false;
 				}
 			}

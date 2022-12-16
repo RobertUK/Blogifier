@@ -1,5 +1,5 @@
 using Blogifier.Core.Data;
-using Blogifier.Core.Data.Migrations;
+
 using Blogifier.Core.Extensions;
 using Blogifier.Shared;
 using Blogifier.Shared.Extensions;

@@ -2,6 +2,8 @@ using Blogifier.Core.Data;
 using Blogifier.Core.Extensions;
 using Blogifier.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ServiceModel.Syndication;
@@ -26,12 +28,16 @@ namespace Blogifier.Core.Providers
         private static int _userId;
 		private static string _webRoot;
 		private static Uri _baseUrl;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
 
-		public SyndicationProvider(AppDbContext dbContext, IStorageProvider storageProvider)
+        public SyndicationProvider(AppDbContext dbContext, IStorageProvider storageProvider, IConfiguration configuration, ILogger logger)
 		{
 			_dbContext = dbContext;
             _storageProvider = storageProvider;
-		}
+            _configuration = configuration;
+            _logger = logger;
+        }
 
 		public async Task<List<Post>> GetPosts(string feedUrl, int userId, Uri baseUrl, string webRoot = "/")
 		{
@@ -50,7 +56,7 @@ namespace Blogifier.Core.Providers
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Error($"Error parsing feed URL: {ex.Message}");
+				_logger.Error($"Error parsing feed URL: {ex.Message}");
 			}
 			return posts;
 		}
@@ -71,14 +77,14 @@ namespace Blogifier.Core.Providers
 				await _dbContext.Posts.AddAsync(post);
 				if (await _dbContext.SaveChangesAsync() == 0)
 				{
-					Serilog.Log.Error($"Error saving post {post.Title}");
+                    _logger.Error($"Error saving post {post.Title}");
 					return false;
 				}
 
 				Post savedPost = await _dbContext.Posts.SingleAsync(p => p.Slug == post.Slug);
 				if(savedPost == null)
 				{
-					Serilog.Log.Error($"Error finding saved post - {post.Title}");
+                    _logger.Error($"Error finding saved post - {post.Title}");
 					return false;
 				}
 
@@ -87,7 +93,7 @@ namespace Blogifier.Core.Providers
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Error($"Error importing post {post.Title}: {ex.Message}");
+                _logger.Error($"Error importing post {post.Title}: {ex.Message}");
 				return false;
 			}
 		}
@@ -196,7 +202,7 @@ namespace Blogifier.Core.Providers
 				}
 				catch (Exception ex)
 				{
-					Serilog.Log.Error($"Error importing images: {ex.Message}");
+                    _logger.Error($"Error importing images: {ex.Message}");
 				}
 			}
 		}
@@ -239,7 +245,7 @@ namespace Blogifier.Core.Providers
 					}
 					catch (Exception ex)
 					{
-						Serilog.Log.Error($"Error importing files: {ex.Message}");
+                        _logger.Error($"Error importing files: {ex.Message}");
 					}
 				}
 			}

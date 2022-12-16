@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,7 +23,8 @@ namespace Blogifier.Shared
         [StringLength(255)]
         public string Email { get; set; }
 
-      
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         public bool IsAdmin { get; set; } = false;

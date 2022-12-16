@@ -38,24 +38,31 @@ namespace Blogifier
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
-            Log.Logger = new LoggerConfiguration()
-               .ReadFrom.Configuration(configuration)
-               .Enrich.FromLogContext()
-               .CreateLogger();
 
-            Log.Warning("Application start");
+            Log.Logger = new LoggerConfiguration()
+          //.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+          .Enrich.FromLogContext()
+          .MinimumLevel.Debug()
+          //.ReadFrom.Configuration(builder.Configuration)
+          .WriteTo.Console()
+          .WriteTo.File("Logs/blog.txt", rollingInterval: RollingInterval.Day)
+          .CreateLogger();
+
+            _configuration = configuration;
+            _logger = Log.Logger;
+
         }
 
-        public IConfiguration Configuration { get; }
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
 
         public void ConfigureServices(IServiceCollection services)
         {
-            Log.Warning("Start configure services");
+            _logger.Warning("Start configure services");
 
             services.AddSwaggerGen();
 
-            services.Configure<BlogifierConfiguration>(Configuration.GetSection("Blogifier"));
+            services.Configure<BlogifierConfiguration>(_configuration.GetSection("Blogifier"));
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -68,6 +75,8 @@ namespace Blogifier
 
             services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
 
+            services.AddSingleton(Log.Logger);
+
             //services.AddAuthentication(options =>
             //{
             //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -78,7 +87,7 @@ namespace Blogifier
                 builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
             }));
 
-            services.AddBlogDatabase(Configuration);
+            services.AddBlogDatabase(_configuration);
 
             services.AddBlogProviders();
 
@@ -103,15 +112,15 @@ namespace Blogifier
                         Duration = 1
                     };
                 });
-
+            
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-              .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+              .AddMicrosoftIdentityWebApp(_configuration.GetSection("AzureAd"))
                   .EnableTokenAcquisitionToCallDownstreamApi()
-                      .AddMicrosoftGraph(Configuration.GetSection("DownstreamApi"))
+                      .AddMicrosoftGraph(_configuration.GetSection("DownstreamApi"))
                       .AddInMemoryTokenCaches();
 
             services.AddAuthentication()
-                      .AddMicrosoftIdentityWebApi(Configuration.GetSection("AzureAd"),
+                      .AddMicrosoftIdentityWebApi(_configuration.GetSection("AzureAd"),
                                                   JwtBearerDefaults.AuthenticationScheme)
                       .EnableTokenAcquisitionToCallDownstreamApi();
 
@@ -143,7 +152,7 @@ namespace Blogifier
 
             services.AddWebOptimizer(pipeline =>
             {
-               // pipeline.MinifyJsFiles();
+                pipeline.MinifyJsFiles();
                 pipeline.CompileScssFiles()
                         .InlineImages(1);
             });
@@ -155,7 +164,7 @@ namespace Blogifier
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<BlogifierConfiguration> blogifierConfig)
         {
-
+            app.UseSerilogRequestLogging();
             var pathBase = blogifierConfig.Value.PathBase;
             app.UseForwardedHeaders();
             if (!string.IsNullOrEmpty(pathBase))
@@ -179,8 +188,8 @@ namespace Blogifier
                 MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.None,
                 Secure = CookieSecurePolicy.Always
             });
-    
 
+   
             app.UseWebOptimizer();
 
             app.UseStaticFiles(new StaticFileOptions()

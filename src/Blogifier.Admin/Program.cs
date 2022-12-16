@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Serilog;
+using Serilog;
+using Serilog.Core;
+using Serilog.Extensions.Logging;
 using Sotsera.Blazor.Toaster.Core.Models;
 using System;
 using System.Net.Http;
@@ -12,7 +16,10 @@ namespace Blogifier.Admin
 	{
 		public static async Task Main(string[] args)
 		{
-			var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+
+
+            var builder = WebAssemblyHostBuilder.CreateDefault(args);
 			builder.RootComponents.Add<App>("#app");
             
 			builder.Services.AddLocalization();
@@ -33,7 +40,17 @@ namespace Blogifier.Admin
 
             builder.Services.AddSingleton<BlogStateProvider>();
 
-			await builder.Build().RunAsync();
+            //var levelSwitch = new LoggingLevelSwitch();
+            //Log.Logger = new LoggerConfiguration()
+            //    .MinimumLevel.ControlledBy(levelSwitch)
+            //    .Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
+            //    .WriteTo.Sink(Serilog.Events.LogEventLevel.Verbose)
+            //    .CreateLogger();
+            //builder.Logging.AddProvider(new SerilogLoggerProvider());
+
+            builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+
+            await builder.Build().RunAsync();
 		}
 	}
 }

@@ -46,6 +46,7 @@ namespace Blogifier
                       //.UseKestrel()
 					 // .UseIISIntegration()
 					  .UseStartup<Startup>();
-				  });
-	}
+				  })
+             .UseSerilog();
+    }
 }

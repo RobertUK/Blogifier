@@ -2,6 +2,7 @@ using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,8 +12,9 @@ namespace Blogifier.Shared
     public class Post
     {
 		public Post() { }
-
-		public int Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
 		public int AuthorId { get; set; }
 
 		public PostType PostType { get; set; }

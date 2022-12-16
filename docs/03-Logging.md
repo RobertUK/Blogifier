@@ -9,5 +9,5 @@ Log.Logger = new LoggerConfiguration()
   .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
   .CreateLogger();
 
-Log.Warning("Test log");
+Warning("Test log");
 ```

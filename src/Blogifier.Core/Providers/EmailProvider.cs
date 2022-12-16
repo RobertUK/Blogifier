@@ -1,6 +1,8 @@
-﻿using Blogifier.Shared;
+using Blogifier.Shared;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Configuration;
+using Serilog;
 using MimeKit;
 using System;
 using System.Collections.Generic;
@@ -15,9 +17,18 @@ namespace Blogifier.Core.Providers
 
 	public class MailKitProvider : IEmailProvider
 	{
-		public MailKitProvider() { }
 
-		public async Task<bool> SendEmail(MailSetting settings, List<Subscriber> subscribers, string subject, string content)
+        private readonly IConfiguration _configuration;
+        private readonly ILogger _logger;
+      
+
+        public MailKitProvider(IConfiguration configuration, ILogger logger)
+        {
+            _configuration = configuration;
+            _logger = logger;
+        }
+
+        public async Task<bool> SendEmail(MailSetting settings, List<Subscriber> subscribers, string subject, string content)
 		{                 
          var client = GetClient(settings);
          if (client == null)
@@ -40,7 +51,7 @@ namespace Blogifier.Core.Providers
             }
 				catch (Exception ex)
 				{
-               Serilog.Log.Warning($"Error sending email to {subscriber.Email}: {ex.Message}");
+                    _logger.Warning($"Error sending email to {subscriber.Email}: {ex.Message}");
             }
          }
 
@@ -61,7 +72,7 @@ namespace Blogifier.Core.Providers
          }
 			catch (Exception ex)
 			{
-            Serilog.Log.Error($"Error connecting to SMTP client: {ex.Message}");
+                _logger.Error($"Error connecting to SMTP client: {ex.Message}");
             return null;
 			}
          

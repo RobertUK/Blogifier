@@ -1,7 +1,8 @@
-﻿using Blogifier.Core.Extensions;
+using Blogifier.Core.Extensions;
 using Blogifier.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,16 +29,19 @@ namespace Blogifier.Core.Providers
 		private string _storageRoot;
 		private readonly string _slash = Path.DirectorySeparatorChar.ToString();
 		private readonly IConfiguration _configuration;
-		
-		public StorageProvider(IConfiguration configuration)
+        private readonly ILogger _logger;
+
+        public StorageProvider(IConfiguration configuration, ILogger logger)
 		{
-			_storageRoot = $"{ContentRoot}{_slash}wwwroot{_slash}data{_slash}";
-			_configuration = configuration;
+            _configuration = configuration;
+            _logger = logger;
+            _storageRoot = $"{ContentRoot}{_slash}wwwroot{_slash}data{_slash}";
+			
 		}
 
 		public bool FileExists(string path)
 		{
-			Serilog.Log.Information($"File exists: {Path.Combine(ContentRoot, path)}");
+            _logger.Information($"File exists: {Path.Combine(ContentRoot, path)}");
 			return File.Exists(Path.Combine(ContentRoot, path));
 		}
 
@@ -69,7 +73,7 @@ namespace Blogifier.Core.Providers
 				}
 				catch (Exception ex) 
 				{
-					Serilog.Log.Error($"Error reading theme settings: {ex.Message}");
+                    _logger.Error($"Error reading theme settings: {ex.Message}");
 					return null;
 				}
 			}
@@ -94,7 +98,7 @@ namespace Blogifier.Core.Providers
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Error($"Error writing theme settings: {ex.Message}");
+                _logger.Error($"Error writing theme settings: {ex.Message}");
 				return false;
 			}
 			return true;
@@ -109,7 +113,7 @@ namespace Blogifier.Core.Providers
 
 			if(InvalidFileName(fileName))
 			{
-				Serilog.Log.Error($"Invalid file name: {fileName}");
+                _logger.Error($"Invalid file name: {fileName}");
 				return false;
 			}
 
@@ -117,19 +121,19 @@ namespace Blogifier.Core.Providers
 				 Path.Combine(_storageRoot, fileName) :
 				 Path.Combine(_storageRoot, path + _slash + fileName);
 
-			Serilog.Log.Information($"Storage root: {_storageRoot}");
-			Serilog.Log.Information($"Uploading file: {filePath}");
+            _logger.Information($"Storage root: {_storageRoot}");
+            _logger.Information($"Uploading file: {filePath}");
 			try
 			{
 				using (var fileStream = new FileStream(filePath, FileMode.Create))
 				{
 					await file.CopyToAsync(fileStream);
-					Serilog.Log.Information($"Uploaded file: {filePath}");
+                    _logger.Information($"Uploaded file: {filePath}");
 				}
 			}
 			catch (Exception ex)
 			{
-				Serilog.Log.Error($"Error uploading file: {ex.Message}");
+                _logger.Error($"Error uploading file: {ex.Message}");
 			}
 
 			return true;
@@ -199,13 +203,13 @@ namespace Blogifier.Core.Providers
 				string testsDirectory = $"tests{_slash}Blogifier.Tests";
 				string appDirectory = $"src{_slash}Blogifier";
 
-				Serilog.Log.Information($"Current directory path: {path}");
+				_logger.Information($"Current directory path: {path}");
 
 				// development unit test run
 				if (path.LastIndexOf(testsDirectory) > 0)
 				{
 					path = path.Substring(0, path.LastIndexOf(testsDirectory));
-					Serilog.Log.Information($"Unit test path: {path}src{_slash}Blogifier");
+					_logger.Information($"Unit test path: {path}src{_slash}Blogifier");
 					return $"{path}src{_slash}Blogifier";
 				}
 
@@ -217,10 +221,10 @@ namespace Blogifier.Core.Providers
 				if (path.LastIndexOf(appDirectory) > 0)
 				{
 					path = path.Substring(0, path.LastIndexOf(appDirectory));
-					Serilog.Log.Information($"Development debug path: {path}src{_slash}Blogifier");
+					_logger.Information($"Development debug path: {path}src{_slash}Blogifier");
 					return $"{path}src{_slash}Blogifier";
 				}
-				Serilog.Log.Information($"Final path: {path}");
+				_logger.Information($"Final path: {path}");
 				return path;
 			}
 		}
