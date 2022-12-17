@@ -31,6 +31,7 @@ using Blogifier.Admin;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;
+using System.Configuration;
 
 namespace Blogifier
 {
@@ -42,7 +43,7 @@ namespace Blogifier
             Log.Logger = new LoggerConfiguration()
           //.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
           .Enrich.FromLogContext()
-          .MinimumLevel.Debug()
+          .MinimumLevel.Verbose()
           //.ReadFrom.Configuration(builder.Configuration)
           .WriteTo.Console()
           .WriteTo.File("Logs/blog.txt", rollingInterval: RollingInterval.Day)
@@ -61,6 +62,7 @@ namespace Blogifier
             _logger.Warning("Start configure services");
 
             services.AddSwaggerGen();
+            services.AddEndpointsApiExplorer();
 
             services.Configure<BlogifierConfiguration>(_configuration.GetSection("Blogifier"));
 
@@ -112,17 +114,51 @@ namespace Blogifier
                         Duration = 1
                     };
                 });
-            
+
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-              .AddMicrosoftIdentityWebApp(_configuration.GetSection("AzureAd"))
-                  .EnableTokenAcquisitionToCallDownstreamApi()
-                      .AddMicrosoftGraph(_configuration.GetSection("DownstreamApi"))
-                      .AddInMemoryTokenCaches();
+             .AddMicrosoftIdentityWebApp(_configuration.GetSection("AzureAd"))
+                 .EnableTokenAcquisitionToCallDownstreamApi()
+                     .AddMicrosoftGraph(_configuration.GetSection("DownstreamApi"))
+                     .AddInMemoryTokenCaches();
 
             services.AddAuthentication()
                       .AddMicrosoftIdentityWebApi(_configuration.GetSection("AzureAd"),
                                                   JwtBearerDefaults.AuthenticationScheme)
                       .EnableTokenAcquisitionToCallDownstreamApi();
+
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AdminAuthorizationPolicy.Name,
+                                  AdminAuthorizationPolicy.Build);
+            });
+
+            services.AddControllersWithViews().AddMicrosoftIdentityUI();
+
+            //    string[] initialScopes = _configuration.GetValue<string>(
+            //"UserApi:ScopeForAccessToken")?.Split(' ');
+
+            //    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme);
+            //      .AddMicrosoftIdentityWebApp(_configuration.GetSection("AzureAd"))
+            //          .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+            //              //.AddMicrosoftGraph(_configuration.GetSection("DownstreamApi"))
+            //              .AddInMemoryTokenCaches();
+
+            //    services.AddAuthentication()
+            //              .AddMicrosoftIdentityWebApi(_configuration.GetSection("AzureAd"),
+            //                                          JwtBearerDefaults.AuthenticationScheme)
+            //              .EnableTokenAcquisitionToCallDownstreamApi();
+
+
+            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+            //    .AddMicrosoftIdentityWebApp(_configuration.GetSection("AzureAd"))
+            //    .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
+            //    .AddInMemoryTokenCaches();
+
+            //services.AddAuthentication()
+            //    .AddMicrosoftIdentityWebApi(_configuration.GetSection("AzureAd"), JwtBearerDefaults.AuthenticationScheme)
+            //    .EnableTokenAcquisitionToCallDownstreamApi(); //?
+
 
 
             services.AddAuthorization(options =>
@@ -152,7 +188,7 @@ namespace Blogifier
 
             services.AddWebOptimizer(pipeline =>
             {
-                pipeline.MinifyJsFiles();
+            //    pipeline.MinifyJsFiles();
                 pipeline.CompileScssFiles()
                         .InlineImages(1);
             });
@@ -189,7 +225,7 @@ namespace Blogifier
                 Secure = CookieSecurePolicy.Always
             });
 
-   
+
             app.UseWebOptimizer();
 
             app.UseStaticFiles(new StaticFileOptions()
@@ -202,8 +238,8 @@ namespace Blogifier
                 }
             });
 
-            app.UseOutputCaching();
-           app.UseWebMarkupMin();
+          //  app.UseOutputCaching();
+          // app.UseWebMarkupMin();
 
             app.UseBlazorFrameworkFiles();
 
@@ -233,6 +269,7 @@ namespace Blogifier
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Blazor API V1");
+                c.RoutePrefix = string.Empty;
             });
 
 

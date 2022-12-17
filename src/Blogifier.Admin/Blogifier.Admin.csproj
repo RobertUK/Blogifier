@@ -1,18 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
+    <UserSecretsId>0284c461-51fe-49d8-92e1-fd68fb1927d2</UserSecretsId>
 
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Blazored.Typeahead" Version="4.7.0" />
     <PackageReference Include="ChartJs.Blazor.Fork" Version="2.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.1" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="5.0.10" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Localization" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Authentication.WebAssembly.Msal" Version="7.0.1" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.1-dev-10301" />
     <PackageReference Include="System.Net.Http.Json" Version="7.0.0" />
     <PackageReference Include="Sotsera.Blazor.Toaster" Version="3.0.0" />
 

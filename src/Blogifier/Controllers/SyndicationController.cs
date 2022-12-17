@@ -1,12 +1,14 @@
-﻿using Blogifier.Core.Data;
+using Blogifier.Core.Data;
 using Blogifier.Core.Providers;
 using Blogifier.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Blogifier.Controllers
@@ -27,9 +29,9 @@ namespace Blogifier.Controllers
 		[Authorize]
 		[HttpGet("getitems")]
 		public async Task<List<Post>> GetItems(string feedUrl, string baseUrl)
-		{
-			Author author = await _dbContext.Authors
-				.Where(a => a.Email == User.Identity.Name)
+        {
+            Author author = await _dbContext.Authors
+				.Where(a => a.Email == User.Claims.FirstOrDefault(t => t.Type == ClaimTypes.Email).Value)
 				.FirstOrDefaultAsync();
 
 			string webRoot = Url.Content("~/");

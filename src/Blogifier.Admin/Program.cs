@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog;
 using Serilog.Core;
@@ -46,9 +47,9 @@ namespace Blogifier.Admin
             //    .Enrich.WithProperty("InstanceId", Guid.NewGuid().ToString("n"))
             //    .WriteTo.Sink(Serilog.Events.LogEventLevel.Verbose)
             //    .CreateLogger();
-            //builder.Logging.AddProvider(new SerilogLoggerProvider());
+           // builder.Logging.AddProvider(new SerilogLoggerProvider());
 
-            builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true));
+            builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true).SetMinimumLevel(LogLevel.Trace));
 
             await builder.Build().RunAsync();
 		}

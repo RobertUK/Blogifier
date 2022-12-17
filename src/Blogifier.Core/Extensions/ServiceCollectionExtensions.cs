@@ -41,9 +41,9 @@ namespace Blogifier.Core.Extensions
                     dbContextOptions => dbContextOptions.UseMySql(
                         section.GetValue<string>("ConnString"),
                         new MySqlServerVersion(new Version(8, 0, 21))
-                      //  mySqlOptions => mySqlOptions.HasCharSet("utf8mb4", DelegationModes.ApplyToAll) //CharSetBehavior(CharSetBehavior.NeverAppend)
+                    //mySqlOptions => mySqlOptions.HasCharSet("utf8mb4", DelegationModes.ApplyToAll) //CharSetBehavior(CharSetBehavior.NeverAppend)
                     )
-                );
+                ) ;
             }
             services.AddDatabaseDeveloperPageExceptionFilter();
             return services;

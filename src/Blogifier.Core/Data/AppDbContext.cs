@@ -53,7 +53,7 @@ namespace Blogifier.Core.Data
             //             .HasForeignKey(pt => pt.PostId);
 
 
-            string sql = "getdate()";
+            string sql = "CURRENT_TIMESTAMP";
 
             if (_options.Extensions != null)
             {
@@ -75,6 +75,15 @@ namespace Blogifier.Core.Data
             modelBuilder.Entity<Newsletter>().Property(n => n.DateUpdated).HasDefaultValueSql(sql);
             modelBuilder.Entity<MailSetting>().Property(n => n.DateUpdated).HasDefaultValueSql(sql);
             modelBuilder.Entity<Comment>().Property(n => n.DateUpdated).HasDefaultValueSql(sql);
+
+            modelBuilder.Entity<Blog>().Property(b => b.DateCreated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<Post>().Property(p => p.DateCreated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<Author>().Property(a => a.DateCreated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<Category>().Property(c => c.DateCreated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<Subscriber>().Property(s => s.DateCreated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<Newsletter>().Property(n => n.DateCreated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<MailSetting>().Property(n => n.DateCreated).HasDefaultValueSql(sql);
+            modelBuilder.Entity<Comment>().Property(n => n.DateCreated).HasDefaultValueSql(sql);
         }
     }
 }

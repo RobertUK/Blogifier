@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -39,8 +39,8 @@ namespace Blogifier.Core.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     AnalyticsListType = table.Column<int>(type: "int", nullable: false),
                     AnalyticsPeriod = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()")
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -58,8 +58,8 @@ namespace Blogifier.Core.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Description = table.Column<string>(type: "varchar(255)", maxLength: 255, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()")
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -84,8 +84,8 @@ namespace Blogifier.Core.Migrations
                     Avatar = table.Column<string>(type: "varchar(400)", maxLength: 400, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsAdmin = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()"),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     BlogId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -119,8 +119,8 @@ namespace Blogifier.Core.Migrations
                     ToName = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Enabled = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()"),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     BlogId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -148,8 +148,8 @@ namespace Blogifier.Core.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Region = table.Column<string>(type: "varchar(120)", maxLength: 120, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()"),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     BlogId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -186,8 +186,8 @@ namespace Blogifier.Core.Migrations
                     IsFeatured = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Selected = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     Published = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()"),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     BlogId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -221,8 +221,8 @@ namespace Blogifier.Core.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsAdmin = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     PostId = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()"),
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     PubDate = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -245,8 +245,8 @@ namespace Blogifier.Core.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     PostId = table.Column<int>(type: "int", nullable: false),
                     Success = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURDATE()")
+                    DateCreated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    DateUpdated = table.Column<DateTime>(type: "datetime(6)", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
