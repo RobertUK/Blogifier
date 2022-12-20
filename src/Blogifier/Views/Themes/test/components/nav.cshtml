@@ -96,7 +96,8 @@
                 <li><a class="dropdown-item" href="~/admin/settings/customize/">@_localizer["customize"]</a></li>
                 <li><a class="dropdown-item" href="~/admin/profile/">@_localizer["edit-profile"]</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="~/admin/logout/">@_localizer["logout"]</a></li>
+                <li><a class="dropdown-item" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">@_localizer["logout"]</a></li>
+
             </ul>
         </div>
     }

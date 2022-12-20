@@ -210,7 +210,8 @@ namespace Blogifier
             {
                 app.UsePathBase(pathBase);
             }
-
+           // app.UseDeveloperExceptionPage();
+           // app.UseWebAssemblyDebugging();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
