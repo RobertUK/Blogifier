@@ -61,6 +61,8 @@ namespace Blogifier
         {
             _logger.Warning("Start configure services");
 
+            _logger.Error(_configuration.GetSection("AzureAd:ClientSecret").Value);
+
             services.AddSwaggerGen();
             services.AddEndpointsApiExplorer();
 
@@ -200,6 +202,7 @@ namespace Blogifier
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IOptions<BlogifierConfiguration> blogifierConfig)
         {
+
             app.UseSerilogRequestLogging();
             var pathBase = blogifierConfig.Value.PathBase;
             app.UseForwardedHeaders();
@@ -207,7 +210,8 @@ namespace Blogifier
             {
                 app.UsePathBase(pathBase);
             }
-
+           // app.UseDeveloperExceptionPage();
+           // app.UseWebAssemblyDebugging();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

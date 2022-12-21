@@ -30,8 +30,9 @@ namespace Blogifier.Controllers
 		[HttpGet("getitems")]
 		public async Task<List<Post>> GetItems(string feedUrl, string baseUrl)
         {
+            var authorEmail = User.Claims.FirstOrDefault(t => t.Type == ClaimTypes.Email).Value;
             Author author = await _dbContext.Authors
-				.Where(a => a.Email == User.Claims.FirstOrDefault(t => t.Type == ClaimTypes.Email).Value)
+				.Where(a => a.Email == authorEmail)
 				.FirstOrDefaultAsync();
 
 			string webRoot = Url.Content("~/");
