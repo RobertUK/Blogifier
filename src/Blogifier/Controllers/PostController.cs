@@ -23,25 +23,29 @@ namespace Blogifier.Controllers
         }
 
 		[HttpGet("list/{filter}/{postType}")]
-		public async Task<ActionResult<List<Post>>> GetPosts(PublishedStatus filter, PostType postType)
+        [OutputCache(Profile = "default")]
+        public async Task<ActionResult<List<Post>>> GetPosts(PublishedStatus filter, PostType postType)
 		{
 			return await _postProvider.GetPosts(filter, postType);
 		}
 
 		[HttpGet("list/search/{term}")]
-		public async Task<ActionResult<List<Post>>> SearchPosts(string term)
+        [OutputCache(Profile = "default")]
+        public async Task<ActionResult<List<Post>>> SearchPosts(string term)
 		{
 			return await _postProvider.SearchPosts(term);
 		}
 
 		[HttpGet("byslug/{slug}")]
-		public async Task<ActionResult<Post>> GetPostBySlug(string slug)
+        [OutputCache(Profile = "default")]
+        public async Task<ActionResult<Post>> GetPostBySlug(string slug)
 		{
 			return await _postProvider.GetPostBySlug(slug);
 		}
 
 		[HttpGet("getslug/{title}")]
-		public async Task<ActionResult<string>> GetSlug(string title)
+        [OutputCache(Profile = "default")]
+        public async Task<ActionResult<string>> GetSlug(string title)
 		{
 			return await _postProvider.GetSlugFromTitle(title);
 		}

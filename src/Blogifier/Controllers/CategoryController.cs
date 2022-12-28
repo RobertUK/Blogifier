@@ -19,24 +19,28 @@ namespace Blogifier.Controllers
 		}
 
 		[HttpGet("{postId:int}")]
-		public async Task<ICollection<Category>> GetPostCategories(int postId)
+        [OutputCache(Profile = "default")]
+        public async Task<ICollection<Category>> GetPostCategories(int postId)
 		{
 			return await _categoryProvider.GetPostCategories(postId);
 		}
 
         [HttpGet("byId/{categoryId:int}")]
+        [OutputCache(Profile = "default")]
         public async Task<Category> GetCategory(int categoryId)
         {
             return await _categoryProvider.GetCategory(categoryId);
         }
 
         [HttpGet]
+        [OutputCache(Profile = "default")]
         public async Task<List<CategoryItem>> GetCategories()
         {
             return await _categoryProvider.Categories();
         }
 
         [HttpGet("{term}")]
+        [OutputCache(Profile = "default")]
         public async Task<List<CategoryItem>> SearchCategories(string term = "*")
         {
             return await _categoryProvider.SearchCategories(term);

@@ -16,8 +16,11 @@ namespace Blogifier
 	{
 		public static void Main(string[] args)
 		{
+
+
 			var host = CreateHostBuilder(args).Build();
-            HibernatingRhinos.Profiler.Appender.EntityFramework.EntityFrameworkProfiler.Initialize();
+
+           
 
             using (var scope = host.Services.CreateScope())
 			{
@@ -37,16 +40,19 @@ namespace Blogifier
 
 
 
-		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			 Host.CreateDefaultBuilder(args)
-				  .ConfigureWebHostDefaults(webBuilder =>
-				  {
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+             Host.CreateDefaultBuilder(args)
+            .UseSerilog()
+                  .ConfigureWebHostDefaults(webBuilder =>
+                  {
                       webBuilder
                       ///.UseContentRoot(Directory.GetCurrentDirectory())
                       //.UseKestrel()
-					 // .UseIISIntegration()
-					  .UseStartup<Startup>();
-				  })
-             .UseSerilog();
+                      // .UseIISIntegration()
+                    // .UseSerilog()
+                      .UseStartup<Startup>();
+                  })
+            ;
+             
     }
 }

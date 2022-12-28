@@ -13,5 +13,7 @@ namespace Blogifier.Shared.Configurations
         public string DemoMode { get; set; }
         public string FileExtensions { get; set; }
 
+        public bool DBDebug { get; set; }
+
     }
 }

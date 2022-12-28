@@ -22,9 +22,9 @@ using WebMarkupMin.Core;
 using WilderMinds.MetaWeblog;
 
 
-using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
+//using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
 
-using WmmNullLogger = WebMarkupMin.Core.Loggers.NullLogger;
+//using WmmNullLogger = WebMarkupMin.Core.Loggers.NullLogger;
 using System;
 using Microsoft.Net.Http.Headers;
 using Blogifier.Admin;
@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Http;
 using System.Configuration;
+using Serilog.Events;
 
 namespace Blogifier
 {
@@ -41,27 +42,27 @@ namespace Blogifier
         {
 
             Log.Logger = new LoggerConfiguration()
-          //.MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
-          .Enrich.FromLogContext()
-          .MinimumLevel.Verbose()
-          //.ReadFrom.Configuration(builder.Configuration)
-          .WriteTo.Console()
-          .WriteTo.File("Logs/blog.txt", rollingInterval: RollingInterval.Day)
-          .CreateLogger();
+               //  .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                // .Enrich.FromLogContext()
+               //  .MinimumLevel.Verbose()
+                .ReadFrom.Configuration(configuration)
+               // .WriteTo.Console()
+               //  .WriteTo.File("Logs/blogkk1.txt", rollingInterval: RollingInterval.Day)
+                 .CreateLogger();
 
             _configuration = configuration;
-            _logger = Log.Logger;
+          //  _logger = Log.Logger;
 
         }
 
         private readonly IConfiguration _configuration;
-        private readonly ILogger _logger;
+      //  private readonly ILogger _logger;
 
         public void ConfigureServices(IServiceCollection services)
         {
-            _logger.Warning("Start configure services");
+            Log.Warning("Start configure services");
 
-            _logger.Error(_configuration.GetSection("AzureAd:ClientSecret").Value);
+            Log.Error(_configuration.GetSection("AzureAd:ClientSecret").Value);
 
             services.AddSwaggerGen();
             services.AddEndpointsApiExplorer();
@@ -81,10 +82,6 @@ namespace Blogifier
 
             services.AddSingleton(Log.Logger);
 
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //}).AddCookie();
 
             services.AddCors(o => o.AddPolicy("BlogifierPolicy", builder =>
             {
@@ -113,7 +110,7 @@ namespace Blogifier
                 {
                     options.Profiles["default"] = new OutputCacheProfile
                     {
-                        Duration = 1
+                        Duration = 15
                     };
                 });
 
@@ -136,30 +133,6 @@ namespace Blogifier
             });
 
             services.AddControllersWithViews().AddMicrosoftIdentityUI();
-
-            //    string[] initialScopes = _configuration.GetValue<string>(
-            //"UserApi:ScopeForAccessToken")?.Split(' ');
-
-            //    services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme);
-            //      .AddMicrosoftIdentityWebApp(_configuration.GetSection("AzureAd"))
-            //          .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-            //              //.AddMicrosoftGraph(_configuration.GetSection("DownstreamApi"))
-            //              .AddInMemoryTokenCaches();
-
-            //    services.AddAuthentication()
-            //              .AddMicrosoftIdentityWebApi(_configuration.GetSection("AzureAd"),
-            //                                          JwtBearerDefaults.AuthenticationScheme)
-            //              .EnableTokenAcquisitionToCallDownstreamApi();
-
-
-            //services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-            //    .AddMicrosoftIdentityWebApp(_configuration.GetSection("AzureAd"))
-            //    .EnableTokenAcquisitionToCallDownstreamApi(initialScopes)
-            //    .AddInMemoryTokenCaches();
-
-            //services.AddAuthentication()
-            //    .AddMicrosoftIdentityWebApi(_configuration.GetSection("AzureAd"), JwtBearerDefaults.AuthenticationScheme)
-            //    .EnableTokenAcquisitionToCallDownstreamApi(); //?
 
 
 
@@ -186,7 +159,7 @@ namespace Blogifier
                         options.MinificationSettings.RemoveOptionalEndTags = false;
                         options.MinificationSettings.WhitespaceMinificationMode = WhitespaceMinificationMode.Safe;
                     });
-            services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
+           // services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
 
             services.AddWebOptimizer(pipeline =>
             {
@@ -210,8 +183,7 @@ namespace Blogifier
             {
                 app.UsePathBase(pathBase);
             }
-           // app.UseDeveloperExceptionPage();
-           // app.UseWebAssemblyDebugging();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -220,8 +192,16 @@ namespace Blogifier
             else
             {
                 app.UseExceptionHandler("/Error");
-                app.UseStatusCodePagesWithReExecute("/Error/{0}");
+                //app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
             }
+
+
+            if (blogifierConfig.Value.DBDebug)
+            {
+                HibernatingRhinos.Profiler.Appender.EntityFramework.EntityFrameworkProfiler.Initialize();
+            }
+
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 HttpOnly = HttpOnlyPolicy.Always,
@@ -242,13 +222,11 @@ namespace Blogifier
                 }
             });
 
-          //  app.UseOutputCaching();
-          // app.UseWebMarkupMin();
+            app.UseOutputCaching();
+           app.UseWebMarkupMin();
 
             app.UseBlazorFrameworkFiles();
 
-
-            app.UseStatusCodePagesWithReExecute("/Shared/Error");
 
             app.UseRouting();
             app.UseCors("BlogifierPolicy");

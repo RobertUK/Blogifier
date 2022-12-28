@@ -24,7 +24,7 @@ namespace Blogifier.Core.Extensions
                     o.UseSqlite(conn);
                     o.EnableDetailedErrors();
                     o.EnableSensitiveDataLogging();
-                    o.ConfigureWarnings(c => c.Log((RelationalEventId.CommandExecuting, LogLevel.Information)));
+                    o.ConfigureWarnings(c => c.Log((RelationalEventId.CommandExecuting, LogLevel.Warning)));
 
                 });
 

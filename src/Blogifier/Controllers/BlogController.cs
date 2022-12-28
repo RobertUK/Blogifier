@@ -19,13 +19,15 @@ namespace Blogifier.Controllers
 		}
 
 		[HttpGet]
-		public async Task<Blog> GetBlog()
+        [OutputCache(Profile = "default")]
+        public async Task<Blog> GetBlog()
 		{
 			return await _blogProvider.GetBlog();
 		}
 
 		[HttpGet("categories")]
-		public async Task<ICollection<Category>> GetBlogCategories()
+        [OutputCache(Profile = "default")]
+        public async Task<ICollection<Category>> GetBlogCategories()
 		{
 			return await _blogProvider.GetBlogCategories();
 		}

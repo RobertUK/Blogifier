@@ -37,7 +37,8 @@ namespace Blogifier.Controllers
             _compositeViewEngine = compositeViewEngine;
 		}
 
-		public async Task<IActionResult> Index(int page = 1)
+        [OutputCache(Profile = "default")]
+        public async Task<IActionResult> Index(int page = 1)
 		{
 
             var model = await getBlogPosts(pager: page);
@@ -51,6 +52,7 @@ namespace Blogifier.Controllers
 		}
 
         [HttpGet("/{slug}")]
+        [OutputCache(Profile = "default")]
         public async Task<IActionResult> Index(string slug)
         {
             if (!string.IsNullOrEmpty(slug))
@@ -92,7 +94,8 @@ namespace Blogifier.Controllers
         }
 
         [HttpGet("categories/{category}")]
-		public async Task<IActionResult> Categories(string category, int page = 1)
+        [OutputCache(Profile = "default")]
+        public async Task<IActionResult> Categories(string category, int page = 1)
 		{
             var model = await getBlogPosts("", page, category);
             string viewPath = $"~/Views/Themes/{model.Blog.Theme}/Category.cshtml";
@@ -190,7 +193,7 @@ namespace Blogifier.Controllers
             return result.Success;
         }
 
-
+        [OutputCache(Profile = "default")]
         public async Task<IActionResult> getSingleBlogPost(string slug){
             try
             {
@@ -224,6 +227,8 @@ namespace Blogifier.Controllers
                 return Redirect("~/error");
             }
         }
+
+        [OutputCache(Profile = "default")]
         public async Task<ListModel> getBlogPosts(string term ="", int pager = 1, string category = "", string slug = ""){
 
             var model = new ListModel{};

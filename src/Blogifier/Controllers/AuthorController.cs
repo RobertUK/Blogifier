@@ -23,20 +23,23 @@ namespace Blogifier.Controllers
 
 		[Authorize]
 		[HttpGet("all")]
-		public async Task<List<Author>> All()
+        [OutputCache(Profile = "default")]
+        public async Task<List<Author>> All()
 		{
 			return await _authorProvider.GetAuthors();
 		}
 
 		[Authorize]
 		[HttpGet("email/{email}")]
-		public async Task<ActionResult<Author>> FindByEmail(string email)
+        [OutputCache(Profile = "default")]
+        public async Task<ActionResult<Author>> FindByEmail(string email)
 		{
 			return await _authorProvider.FindByEmail(email);
 		}
 
 		[HttpGet("getcurrent")]
-		public async Task<ActionResult<Author>> GetCurrentAuthor()
+        [OutputCache(Profile = "default")]
+        public async Task<ActionResult<Author>> GetCurrentAuthor()
 		{
             var x = User.FindFirstValue(ClaimTypes.Email);
 

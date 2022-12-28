@@ -49,7 +49,7 @@ namespace Blogifier.Admin
             //    .CreateLogger();
            // builder.Logging.AddProvider(new SerilogLoggerProvider());
 
-            builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true).SetMinimumLevel(LogLevel.Trace));
+           // builder.Services.AddLogging(loggingBuilder => loggingBuilder.AddSerilog(dispose: true).SetMinimumLevel(LogLevel.Debug));
 
             await builder.Build().RunAsync();
 		}
