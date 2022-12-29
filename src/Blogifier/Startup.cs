@@ -22,9 +22,9 @@ using WebMarkupMin.Core;
 using WilderMinds.MetaWeblog;
 
 
-//using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
+using IWmmLogger = WebMarkupMin.Core.Loggers.ILogger;
 
-//using WmmNullLogger = WebMarkupMin.Core.Loggers.NullLogger;
+using WmmNullLogger = WebMarkupMin.Core.Loggers.NullLogger;
 using System;
 using Microsoft.Net.Http.Headers;
 using Blogifier.Admin;
@@ -63,6 +63,12 @@ namespace Blogifier
             Log.Warning("Start configure services");
 
             Log.Error(_configuration.GetSection("AzureAd:ClientSecret").Value);
+
+#if DEBUG
+            services.AddSassCompiler();
+#endif
+
+       
 
             services.AddSwaggerGen();
             services.AddEndpointsApiExplorer();
@@ -110,7 +116,7 @@ namespace Blogifier
                 {
                     options.Profiles["default"] = new OutputCacheProfile
                     {
-                        Duration = 15
+                        Duration = 1
                     };
                 });
 
@@ -159,11 +165,11 @@ namespace Blogifier
                         options.MinificationSettings.RemoveOptionalEndTags = false;
                         options.MinificationSettings.WhitespaceMinificationMode = WhitespaceMinificationMode.Safe;
                     });
-           // services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
+           services.AddSingleton<IWmmLogger, WmmNullLogger>(); // Used by HTML minifier
 
             services.AddWebOptimizer(pipeline =>
             {
-            //    pipeline.MinifyJsFiles();
+              // pipeline.MinifyJsFiles();
                 pipeline.CompileScssFiles()
                         .InlineImages(1);
             });
@@ -222,8 +228,8 @@ namespace Blogifier
                 }
             });
 
-            app.UseOutputCaching();
-           app.UseWebMarkupMin();
+      //      app.UseOutputCaching();
+     //     app.UseWebMarkupMin();
 
             app.UseBlazorFrameworkFiles();
 

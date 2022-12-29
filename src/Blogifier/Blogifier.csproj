@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -10,9 +10,17 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="data\**" />
+	  <Compile Remove="Logs\**" />
 	  <Compile Remove="Services\**" />
+	  <Content Remove="data\**" />
+	  <Content Remove="Logs\**" />
 	  <Content Remove="Services\**" />
+	  <EmbeddedResource Remove="data\**" />
+	  <EmbeddedResource Remove="Logs\**" />
 	  <EmbeddedResource Remove="Services\**" />
+	  <None Remove="data\**" />
+	  <None Remove="Logs\**" />
 	  <None Remove="Services\**" />
 	</ItemGroup>
 
@@ -25,6 +33,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
+
+    <PackageReference Include="AspNetCore.SassCompiler" Version="1.57.1" />
 
     <PackageReference Include="EntityFrameworkProfiler" Version="6.0.6037" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.1" />
@@ -72,18 +82,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Logs\" />
 	  <Folder Include="wwwroot\data\" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <None Include="Controllers\AccountController.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Update="data\Blog.db">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
 	</ItemGroup>
 
 	<!--<ItemGroup>

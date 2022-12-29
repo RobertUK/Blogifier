@@ -1,17 +1,22 @@
 using Blogifier.Shared;
+using Blogifier.Shared.Configurations;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Blogifier.Core.Data
 {
     public class AppDbContext : DbContext
     {
         protected readonly DbContextOptions<AppDbContext> _options;
+        private readonly BlogifierConfiguration _blogifierConfiguration;
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
         {
             _options = options;
-            
+          //  _blogifierConfiguration = (BlogifierConfiguration)blogifierConfiguration;
+
+
 
         }
 

@@ -67,6 +67,7 @@ namespace Blogifier.Shared
     {
         Today = 1,
         Yesterday = 2,
+        Days3 = 6,
         Days7 = 3,
         Days30 = 4,
         Days90 = 5

@@ -5,6 +5,8 @@
 
 @{
     PostModel _model = (PostModel)Model;
+    var request = Url.ActionContext.HttpContext.Request;
+    var absoluteUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}";
 }
 <nav class="post-nav">
     <div class="d-none d-md-flex align-items-md-center">

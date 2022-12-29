@@ -80,6 +80,8 @@ namespace Blogifier.Core.Providers
                     return 1;
                 case AnalyticsPeriod.Yesterday:
                     return 2;
+                case AnalyticsPeriod.Days3:
+                    return 3;
                 case AnalyticsPeriod.Days7:
                     return 7;
                 case AnalyticsPeriod.Days30:

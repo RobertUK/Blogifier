@@ -8,23 +8,34 @@ using Serilog;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System;
 using Microsoft.Extensions.Logging;
+using Blogifier.Shared.Configurations;
+using Microsoft.Extensions.Options;
 
 namespace Blogifier.Core.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+
+        private static BlogifierConfiguration _blogifierConfiguration;
+
         public static IServiceCollection AddBlogDatabase(this IServiceCollection services, IConfiguration configuration)
         {
             var section = configuration.GetSection("Blogifier");
             var conn = section.GetValue<string>("ConnString");
+            var dbDebug = section.GetValue<bool>("DbDebug");
+            //  _blogifierConfiguration =configuration.GetSection(IOptions<BlogifierConfiguration>)
 
             if (section.GetValue<string>("DbProvider") == "SQLite")
                 services.AddDbContext<AppDbContext>(o =>
                 {
                     o.UseSqlite(conn);
-                    o.EnableDetailedErrors();
-                    o.EnableSensitiveDataLogging();
-                    o.ConfigureWarnings(c => c.Log((RelationalEventId.CommandExecuting, LogLevel.Warning)));
+
+                    if (dbDebug)
+                    {
+                        o.EnableDetailedErrors();
+                        o.EnableSensitiveDataLogging();
+                        o.ConfigureWarnings(c => c.Log((RelationalEventId.CommandExecuting, LogLevel.Warning)));
+                    }
 
                 });
 
