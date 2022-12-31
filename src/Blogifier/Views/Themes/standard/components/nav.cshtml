@@ -11,6 +11,8 @@
     var categories = await _categoryProvider.Categories();
     var catUrl = Url.Content("~/categories");
     var currentUserAuthor = await _authorProvider.FindByEmail(User.FindFirstValue(ClaimTypes.Email));
+    var request = Url.ActionContext.HttpContext.Request;
+    var absoluteUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}";
 }
 
 <nav class="header-nav d-flex">
@@ -99,11 +101,11 @@
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
                 @if (User.IsInRole("Admin"))
                 {
-                    <li><a class="dropdown-item" href="~/admin/">@_localizer["dashboard"]</a></li>
-                    <li><a class="dropdown-item" href="~/admin/newsletter/">@_localizer["newsletter"]</a></li>
-                    <li><a class="dropdown-item" href="~/admin/settings/">@_localizer["settings"]</a></li>
-                    <li><a class="dropdown-item" href="~/admin/settings/customize/">@_localizer["customize"]</a></li>
-                    <li><a class="dropdown-item" href="~/admin/profile/">@_localizer["edit-profile"]-admin</a></li>
+                    <li><a class="dropdown-item" href="@absoluteUrl/admin/">@_localizer["dashboard"]</a></li>
+                    <li><a class="dropdown-item" href="@absoluteUrl/admin/newsletter/">@_localizer["newsletter"]</a></li>
+                    <li><a class="dropdown-item" href="@absoluteUrl/admin/settings/">@_localizer["settings"]</a></li>
+                    <li><a class="dropdown-item" href="@absoluteUrl/admin/settings/customize/">@_localizer["customize"]</a></li>
+                    <li><a class="dropdown-item" href="@absoluteUrl/admin/profile/">@_localizer["edit-profile"]-admin</a></li>
                 }
 
                 <li><a class="dropdown-item" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="EditProfile">@_localizer["edit-profile"]</a></li>
@@ -117,7 +119,7 @@
     }
     else
     {
-        @* <a class="header-nav-button -login ms-4" href="~/admin/login/" title="@_localizer["login"]" aria-label="@_localizer["login"]" role="button">*@
+        @* <a class="header-nav-button -login ms-4" href="@absoluteUrl/admin/login/" title="@_localizer["login"]" aria-label="@_localizer["login"]" role="button">*@
         <a class="header-nav-button -login ms-4" asp-area="MicrosoftIdentity" asp-controller="Account" title="@_localizer["login"]" asp-action="SignIn" role="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z" />

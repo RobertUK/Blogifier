@@ -1,3 +1,7 @@
+@{
+    var request = Url.ActionContext.HttpContext.Request;
+    var absoluteUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}";
+}
 <!doctype html>
 <html lang="en">
 
@@ -36,7 +40,6 @@
             max-width: 100%;
             padding: 2rem;
             margin: auto;
-
         }
 
         .title {
@@ -63,13 +66,13 @@
             line-height: 2.5rem;
         }
 
-        .button:hover {
-            background-color: #009460;
-        }
+            .button:hover {
+                background-color: #009460;
+            }
 
-        .button .icon {
-            vertical-align: middle;
-        }
+            .button .icon {
+                vertical-align: middle;
+            }
 
         @@media screen and (min-width:480px) {
             .title {
@@ -82,9 +85,9 @@
                 font-weight: 300;
             }
 
-            .message .br {
-                display: block;
-            }
+                .message .br {
+                    display: block;
+                }
 
             .button {
                 line-height: 2.75rem;
@@ -100,11 +103,11 @@
         <h1 class="title">Not Found!</h1>
         <p class="message">The Page you are looking for doesn't exist, or error occurred.</p>
         <p>
-            <a class="button" href="~/">
+            <a class="button" href="@absoluteUrl/">
                 <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                    viewBox="0 0 16 16">
+                     viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
-                        d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
+                          d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
                 </svg>
                 Home Page
             </a>

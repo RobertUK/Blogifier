@@ -5,6 +5,8 @@
 @{
    Layout = "layouts/_main.cshtml";
    ListModel listModel = (ListModel)Model;
+    var request = Url.ActionContext.HttpContext.Request;
+    var absoluteUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}";
 }
 
 <main class="container search">
@@ -20,10 +22,10 @@
         {
             <div class="row mb-3">
                 <div class="col-4">
-                    <img src="~/@post.Cover" alt="@post.Title">
+                    <img src="@absoluteUrl/@post.Cover" alt="@post.Title">
                 </div>
                 <div class="col-8">
-                    <a href="~/posts/@post.Slug">@post.Title</a>
+                    <a href="@absoluteUrl/posts/@post.Slug">@post.Title</a>
                     <p>@post.Description</p>
                 </div>
             </div>

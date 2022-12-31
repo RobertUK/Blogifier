@@ -13,7 +13,7 @@
         @if (Model.Older != null)
         {
             <div class="col">
-                <a class="post-nav-item text-start" href="~/posts/@_model.Older.Slug" aria-label="@_localizer["Previous post"]">
+                <a class="post-nav-item text-start" href="@absoluteUrl/posts/@_model.Older.Slug" aria-label="@_localizer["Previous post"]">
                     <span class="post-nav-text">@_localizer["Previous post"]</span>
                     <h4 class="post-nav-title">@_model.Older.Title</h4>
                 </a>
@@ -22,7 +22,7 @@
         @if (Model.Newer != null)
         {
             <div class="col">
-                <a class="post-nav-item text-end" href="~/posts/@_model.Newer.Slug" aria-label="@_localizer["Next post"]">
+                <a class="post-nav-item text-end" href="@absoluteUrl/posts/@_model.Newer.Slug" aria-label="@_localizer["Next post"]">
                     <span class="post-nav-text">@_localizer["Next post"]</span>
                     <h4 class="post-nav-title">@_model.Newer.Title</h4>
                 </a>

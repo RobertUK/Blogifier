@@ -6,6 +6,8 @@
 @{
     ListModel listModel = (ListModel)Model;
     string root = Url.Content("~/");
+    var request = Url.ActionContext.HttpContext.Request;
+    var absoluteUrl = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.PathBase.ToUriComponent()}";
 }
 
 @if (listModel.Posts.Count() > 0)
@@ -16,19 +18,19 @@
             <div class="col">
                 <article class="post-grid d-flex flex-column">
                     <figure class="post-grid-cover">
-                        <img class="post-grid-img" src="~/@post.Cover" alt="@post.Title">
+                        <img class="post-grid-img" src="@absoluteUrl/@post.Cover" alt="@post.Title">
                     </figure>
                     @if (post.Categories != null)
                     {
                         <div class="post-grid-cats">
                             @foreach (var cat in post.Categories)
                             {
-                                <a class="post-grid-cats-link" href="~/categories/@cat.Content" tabindex="-1">@cat.Content</a>
+                                <a class="post-grid-cats-link" href="@absoluteUrl/categories/@cat.Content" tabindex="-1">@cat.Content</a>
                             }
                         </div>
                     }
                     <h2 class="post-grid-title">
-                        <a class="post-grid-link" href="~/posts/@post.Slug">@post.Title</a>
+                        <a class="post-grid-link" href="@absoluteUrl/posts/@post.Slug">@post.Title</a>
                     </h2>
                     <p class="post-grid-desc">@Html.Raw(post.Description)</p>
                     <div class="post-grid-meta d-flex">
@@ -44,7 +46,7 @@
                             <time class="post-grid-date-time">@post.Published.ToFriendlyShortDateString()</time>
                         </div>
 
-                        <a class="post-grid-comments" href="~/posts/@post.Slug#comments" itemprop="discussionUrl" title="Go to the comments section">
+                        <a class="post-grid-comments" href="@absoluteUrl/posts/@post.Slug#comments" itemprop="discussionUrl" title="Go to the comments section">
 
                             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body_1" width="16" height="16" fill="currentColor" fill-rule="nonzero" viewBox="0 0 16 16">
 
@@ -56,7 +58,7 @@
                             <span itemprop="commentCount">@post.Comments.Count()  @(post.Comments.Count() == 1 ? "comment" : "comments")</span>
                         </a>
 
-                        <a class="post-grid-more ms-auto" href="~/posts/@post.Slug" tabindex="-1">
+                        <a class="post-grid-more ms-auto" href="@absoluteUrl/posts/@post.Slug" tabindex="-1">
                             <span>Read</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right-short" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z" />
